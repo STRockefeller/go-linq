@@ -1,0 +1,3 @@
+# Go-Linq
+
+![license](https://img.shields.io/github/license/STRockefeller/go-linq?style=plastic)![code size](https://img.shields.io/github/languages/code-size/STRockefeller/go-linq?style=plastic)![open issues](https://img.shields.io/github/issues/STRockefeller/go-linq?style=plastic)![closed issues](https://img.shields.io/github/issues-closed/STRockefeller/go-linq?style=plastic)![go version](https://img.shields.io/github/go-mod/go-version/STRockefeller/go-linq?style=plastic)![latest version](https://img.shields.io/github/v/tag/STRockefeller/go-linq?style=plastic)
