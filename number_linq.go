@@ -4,6 +4,10 @@ type number interface {
 	int | int16 | int32 | int64 | float32 | float64
 }
 
+// NumberLinq provides following new methods:
+//  - Sum
+//  - Max
+//  - Min
 type NumberLinq[T LinqableType, N number] struct {
 	Linq[T]
 }

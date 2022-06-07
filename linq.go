@@ -9,6 +9,8 @@ type LinqableType interface {
 	comparable
 }
 
+// Linq simulates C# System.Linq Enumerable methods and System.Collections.Generic List methods.
+// Methods of Linq will panic when something goes wrong.
 type Linq[T LinqableType] []T
 
 // Contains determines whether a sequence contains a specified element.
