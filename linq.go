@@ -9,6 +9,10 @@ type LinqableType interface {
 	comparable
 }
 
+type Orderable interface {
+	number | string
+}
+
 // Linq simulates C# System.Linq Enumerable methods and System.Collections.Generic List methods.
 // Methods of Linq will panic when something goes wrong.
 type Linq[T LinqableType] []T
@@ -249,6 +253,22 @@ func (linq Linq[T]) SkipLast(n int) Linq[T] {
 		panic("Linq: SkipLast() out of index")
 	}
 	return linq.Take(len(linq) - n)
+}
+
+// OrderBy sorts the elements of a sequence in ascending order according to a key.
+func OrderBy[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq[L] {
+	sort.SliceStable(linq, func(i, j int) bool {
+		return comparer(linq[i]) < comparer(linq[j])
+	})
+	return linq
+}
+
+// OrderByDescending sorts the elements of a sequence in descending order according to a key.
+func OrderByDescending[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq[L] {
+	sort.SliceStable(linq, func(i, j int) bool {
+		return comparer(linq[i]) > comparer(linq[j])
+	})
+	return linq
 }
 
 // OrderBy sorts the elements of a sequence in ascending order according to a key.

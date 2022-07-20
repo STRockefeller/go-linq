@@ -159,6 +159,21 @@ func Test_Int_Methods(t *testing.T) {
 		orderedSi := si.OrderByDescending(func(i int) int { return i })
 		assert.Equal(Linq[int]([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
 	}
+	{ // another Order
+		si := Linq[int]([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		orderedSi := OrderBy(si, func(i int) int { return i })
+		assert.Equal(Linq[int]([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
+	}
+	{ // another Order
+		si := Linq[int]([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		orderedSi := OrderBy(si, func(i int) int64 { return int64(i * 20) })
+		assert.Equal(Linq[int]([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
+	}
+	{ // another OrderByDescending
+		si := Linq[int]([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		orderedSi := OrderByDescending(si, func(i int) int { return i })
+		assert.Equal(Linq[int]([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
+	}
 	{ // Add
 		si := Linq[int]([]int{1, 2, 3})
 		si.Add(4)
@@ -256,5 +271,15 @@ func Test_Struct_Methods(t *testing.T) {
 
 		actual := users.Skip(5).Where(func(u user) bool { return u.name[0] == 'A' }).Count(func(u user) bool { return true })
 		assert.Equal(2, actual)
+	}
+	{ // Order by string
+		ss := Linq[user]([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
+		orderedSs := OrderBy(ss, func(u user) string { return u.name })
+		assert.Equal(Linq[user]{{name: "a"}, {name: "a1234567"}, {name: "abc"}, {name: "apple"}}, orderedSs)
+	}
+	{ // Order by string length
+		ss := Linq[user]([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
+		orderedSs := OrderBy(ss, func(u user) int { return len(u.name) })
+		assert.Equal(Linq[user]{{name: "a"}, {name: "abc"}, {name: "apple"}, {name: "a1234567"}}, orderedSs)
 	}
 }
