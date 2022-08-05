@@ -2,6 +2,8 @@
 
 ![license](https://img.shields.io/github/license/STRockefeller/go-linq?style=plastic)![code size](https://img.shields.io/github/languages/code-size/STRockefeller/go-linq?style=plastic)![open issues](https://img.shields.io/github/issues/STRockefeller/go-linq?style=plastic)![closed issues](https://img.shields.io/github/issues-closed/STRockefeller/go-linq?style=plastic)![go version](https://img.shields.io/github/go-mod/go-version/STRockefeller/go-linq?style=plastic)![latest version](https://img.shields.io/github/v/tag/STRockefeller/go-linq?style=plastic)
 
+[![GitHub Super-Linter](https://github.com/STRockefeller/go-linq/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)
+
 C# `System.Linq` [Enumerable](https://docs.microsoft.com/en-us/dotnet/api/system.linq.enumerable?view=net-6.0) methods and `System.Collections.Generic` [List](https://docs.microsoft.com/en-us/dotnet/api/system.collections.generic.list-1?view=net-6.0) realization by go generic.
 
 ## Notice
