@@ -73,6 +73,10 @@ func Test_Int_Methods(t *testing.T) {
 		actual := si.Take(2).Append(3).ToSlice()
 		assert.Equal([]int{0, 1, 3}, actual)
 	}
+	{ // case Append multiple value
+		actual := si.Take(2).Append(3, 5, 7).ToSlice()
+		assert.Equal([]int{0, 1, 3, 5, 7}, actual)
+	}
 	{ // case ElementAt
 		actual := si.ElementAt(3)
 		assert.Equal(3, actual)
@@ -96,6 +100,10 @@ func Test_Int_Methods(t *testing.T) {
 	{ // case Prepend
 		actual := si.Prepend(999).First(func(i int) bool { return true })
 		assert.Equal(999, actual)
+	}
+	{ // case Prepend multiple value
+		actual := si.Prepend(999, 888)[:2]
+		assert.Equal(Linq[int]{999, 888}, actual)
 	}
 	{ // case Reverse
 		actual := si.Reverse().ToSlice()

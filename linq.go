@@ -72,13 +72,13 @@ func (linq Linq[T]) All(predicate func(T) bool) bool {
 }
 
 // Append appends a value to the end of the sequence.
-func (linq Linq[T]) Append(t T) Linq[T] {
-	return append(linq, t)
+func (linq Linq[T]) Append(t ...T) Linq[T] {
+	return append(linq, t...)
 }
 
 // Prepend adds a value to the beginning of the sequence.
-func (linq Linq[T]) Prepend(t T) Linq[T] {
-	return append([]T{t}, linq.ToSlice()...)
+func (linq Linq[T]) Prepend(t ...T) Linq[T] {
+	return append(t, linq.ToSlice()...)
 }
 
 // ElementAt returns the element at a specified index in a sequence.
