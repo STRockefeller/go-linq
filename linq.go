@@ -303,6 +303,14 @@ func (linq Linq[T]) ToSlice() []T {
 	return res
 }
 
+func (linq Linq[T]) ToChannel() chan T {
+	res := make(chan T, len(linq))
+	linq.ForEach(func(t T) {
+		res <- t
+	})
+	return res
+}
+
 // #region not linq
 
 // Add adds an object to the end of the Linq[T].
