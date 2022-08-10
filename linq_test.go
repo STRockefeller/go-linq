@@ -13,6 +13,22 @@ func Test_Int_Methods(t *testing.T) {
 	{ // case ToSlice
 		assert.Equal([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, si.ToSlice())
 	}
+	{ // case ToChannel
+		ch := si.ToChannel()
+		var elements []int
+		for element := range ch {
+			elements = append(elements, element)
+		}
+		assert.ElementsMatch(si, elements)
+	}
+	{ // case ToChannelWithBuffer
+		ch := si.ToChannelWithBuffer(2)
+		var elements []int
+		for element := range ch {
+			elements = append(elements, element)
+		}
+		assert.ElementsMatch(si, elements)
+	}
 	{ // case Where
 		actual := si.Where(func(i int) bool { return i%2 == 0 }).ToSlice()
 		assert.Equal([]int{0, 2, 4, 6, 8}, actual)

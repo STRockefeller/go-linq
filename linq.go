@@ -303,11 +303,25 @@ func (linq Linq[T]) ToSlice() []T {
 	return res
 }
 
-func (linq Linq[T]) ToChannel() chan T {
+// ToChannel creates a channel with values in Linq[T]
+func (linq Linq[T]) ToChannel() <-chan T {
 	res := make(chan T, len(linq))
 	linq.ForEach(func(t T) {
 		res <- t
 	})
+	close(res)
+	return res
+}
+
+// ToChannelWithBuffer creates a channel with values in Linq[T] with specified buffer. (async method)
+func (linq Linq[T]) ToChannelWithBuffer(buffer int) <-chan T {
+	res := make(chan T, buffer)
+	go func() {
+		linq.ForEach(func(t T) {
+			res <- t
+		})
+		close(res)
+	}()
 	return res
 }
 
