@@ -325,6 +325,42 @@ func (linq Linq[T]) ToChannelWithBuffer(buffer int) <-chan T {
 	return res
 }
 
+// Creates a map[interface{}]T from an Linq[T] according to a specified key selector function.
+func (linq Linq[T]) ToMapWithKey(keySelector func(T) interface{}) map[interface{}]T {
+	res := make(map[interface{}]T)
+	linq.ForEach(func(t T) {
+		res[keySelector(t)] = t
+	})
+	return res
+}
+
+// Creates a map[TKey]TSource from an Linq[TSource] according to a specified key selector function.
+func ConvertToMapWithKey[TSource LinqableType, TKey comparable](linq Linq[TSource], keySelector func(TSource) TKey) map[TKey]TSource {
+	res := make(map[TKey]TSource)
+	linq.ForEach(func(t TSource) {
+		res[keySelector(t)] = t
+	})
+	return res
+}
+
+// Creates a map[interface{}]interface from an Linq[T] according to a specified key selector function.
+func (linq Linq[T]) ToMapWithKeyValue(keySelector func(T) interface{}, valueSelector func(T) interface{}) map[interface{}]interface{} {
+	res := make(map[interface{}]interface{})
+	linq.ForEach(func(t T) {
+		res[keySelector(t)] = valueSelector(t)
+	})
+	return res
+}
+
+// Creates a map[TKey,TValue] from an Linq[TSource] according to specified key selector and element selector functions.
+func ConvertToMapWithKeyValue[TSource LinqableType, TKey comparable, TValue any](linq Linq[TSource], keySelector func(TSource) TKey, valueSelector func(TSource) TValue) map[TKey]TValue {
+	res := make(map[TKey]TValue)
+	linq.ForEach(func(t TSource) {
+		res[keySelector(t)] = valueSelector(t)
+	})
+	return res
+}
+
 // #region not linq
 
 // Add adds an object to the end of the Linq[T].

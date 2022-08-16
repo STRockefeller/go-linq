@@ -29,6 +29,22 @@ func Test_Int_Methods(t *testing.T) {
 		}
 		assert.ElementsMatch(si, elements)
 	}
+	{ // case ToMapWithKey
+		m := si.ToMapWithKey(func(i int) interface{} { return i * 10 })
+		assert.Equal(5, m[50])
+	}
+	{ // case ConvertToMapWithKey
+		m := ConvertToMapWithKey(si, func(i int) float32 { return float32(i) * 0.1 })
+		assert.Equal(5, m[0.5])
+	}
+	{ // case ToMapWithKeyValue
+		m := si.ToMapWithKeyValue(func(i int) interface{} { return i * 100 }, func(i int) interface{} { return i * 2 })
+		assert.Equal(4, m[200])
+	}
+	{ // case ConvertToMapWithKeyValue
+		m := ConvertToMapWithKeyValue(si, func(i int) int { return i * 100 }, func(i int) int { return i * 2 })
+		assert.Equal(6, m[300])
+	}
 	{ // case Where
 		actual := si.Where(func(i int) bool { return i%2 == 0 }).ToSlice()
 		assert.Equal([]int{0, 2, 4, 6, 8}, actual)
