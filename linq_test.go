@@ -323,3 +323,29 @@ func Test_Struct_Methods(t *testing.T) {
 		assert.Equal(Linq[user]{{name: "a"}, {name: "abc"}, {name: "apple"}, {name: "a1234567"}}, orderedSs)
 	}
 }
+
+func Test_Select(t *testing.T) {
+	assert := assert.New(t)
+	type user struct {
+		name string
+		age  int
+	}
+
+	users := Linq[user]{
+		{
+			name: "Ann",
+			age:  12,
+		},
+		{
+			name: "Jack",
+			age:  11,
+		},
+		{
+			name: "Ian",
+			age:  15,
+		},
+	}
+
+	names := Select(users, func(u user) string { return u.name })
+	assert.Equal([]string{"Ann", "Jack", "Ian"}, names.ToSlice())
+}

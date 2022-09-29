@@ -255,6 +255,15 @@ func (linq Linq[T]) SkipLast(n int) Linq[T] {
 	return linq.Take(len(linq) - n)
 }
 
+// Select projects each element of linq into a new form by incorporating the element's index.
+func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
+	res := Linq[S]{}
+	linq.ForEach(func(t T) {
+		res = res.Append(delegate(t))
+	})
+	return res
+}
+
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
 func OrderBy[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq[L] {
 	sort.SliceStable(linq, func(i, j int) bool {
