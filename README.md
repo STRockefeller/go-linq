@@ -49,3 +49,61 @@ func linqTest() {
 ```
 
 See [pkg.go.dev document](https://pkg.go.dev/github.com/STRockefeller/go-linq) for details
+
+## Benchmark
+
+compare with another linq package.
+
+```go
+package main
+
+import (
+ "fmt"
+ "testing"
+
+ STRLinq "github.com/STRockefeller/go-linq"
+ AHMLinq "github.com/ahmetb/go-linq/v3"
+)
+
+var testStrings = []string{"Oh,", "mister", "ocean", "fish", "!"}
+var testIntegers = []int{7, 5, 3, 9, 5, 1, 7, 4, 1, 0, 3, 6, 9}
+
+func BenchmarkSTRockefeller_linq(b *testing.B) {
+ for i := 0; i < b.N; i++ {
+  STRLinq.Linq[string](testStrings).Where(func(s string) bool { return len(s) >= 3 }).Skip(1).Contains("mister")
+
+  mySlice := STRLinq.Linq[int](testIntegers).Distinct().Where(func(i int) bool { return i > 3 }).ToSlice()
+
+  if false {
+   fmt.Print(mySlice)
+  }
+ }
+}
+
+func BenchmarkAhmetb_linq(b *testing.B) {
+ for i := 0; i < b.N; i++ {
+  AHMLinq.From(testStrings).Where(func(i interface{}) bool { return len(i.(string)) >= 3 }).Skip(1).Contains("mister")
+
+  var mySlice []int
+  AHMLinq.From(testIntegers).Distinct().Where(func(i interface{}) bool { return i.(int) > 3 }).ToSlice(&mySlice)
+
+  if false {
+   fmt.Print(mySlice)
+  }
+ }
+}
+```
+
+result
+
+```bash
+goos: windows
+goarch: amd64
+pkg: test
+cpu: Intel(R) Core(TM) i7-9700 CPU @ 3.00GHz
+BenchmarkSTRockefeller_linq-8     2529393        467.3 ns/op      400 B/op       12 allocs/op
+BenchmarkAhmetb_linq-8             521704       2121 ns/op     1080 B/op       45 allocs/op
+PASS
+coverage: [no statements]
+ok   test 3.004s
+```
