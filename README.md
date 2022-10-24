@@ -1,6 +1,7 @@
 # Go-Linq
 
-![license](https://img.shields.io/github/license/STRockefeller/go-linq?style=plastic)![code size](https://img.shields.io/github/languages/code-size/STRockefeller/go-linq?style=plastic)![open issues](https://img.shields.io/github/issues/STRockefeller/go-linq?style=plastic)![closed issues](https://img.shields.io/github/issues-closed/STRockefeller/go-linq?style=plastic)![go version](https://img.shields.io/github/go-mod/go-version/STRockefeller/go-linq?style=plastic)![latest version](https://img.shields.io/github/v/tag/STRockefeller/go-linq?style=plastic)
+![license](https://img.shields.io/github/license/STRockefeller/go-linq?style=plastic)![code size](https://img.shields.io/github/languages/code-size/STRockefeller/go-linq?style=plastic)![open issues](https://img.shields.io/github/issues/STRockefeller/go-linq?style=plastic)![closed issues](https://img.shields.io/github/issues-closed/STRockefeller/go-linq?style=plastic)
+![go version](https://img.shields.io/github/go-mod/go-version/STRockefeller/go-linq?style=plastic)![latest version](https://img.shields.io/github/v/tag/STRockefeller/go-linq?style=plastic)
 
 [![GitHub Super-Linter](https://github.com/STRockefeller/go-linq/workflows/Lint%20Code%20Base/badge.svg)](https://github.com/marketplace/actions/super-linter)[![Go Report Card](https://goreportcard.com/badge/github.com/STRockefeller/go-linq)](https://goreportcard.com/report/github.com/STRockefeller/go-linq)
 
