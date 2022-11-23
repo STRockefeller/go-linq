@@ -280,6 +280,19 @@ func OrderByDescending[L LinqableType, O Orderable](linq Linq[L], comparer func(
 	return linq
 }
 
+func GroupBy[L LinqableType, K comparable, E any](linq Linq[L], key func(L) K, element func(L) E) map[K][]E {
+	res := make(map[K][]E)
+	linq.ForEach(func(l L) {
+		elem := element(l)
+		if _, ok := res[key(l)]; ok {
+			res[key(l)] = append(res[key(l)], elem)
+		} else {
+			res[key(l)] = []E{elem}
+		}
+	})
+	return res
+}
+
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
 func (linq Linq[T]) OrderBy(comparer func(T) int) Linq[T] {
 	sort.SliceStable(linq, func(i, j int) bool {

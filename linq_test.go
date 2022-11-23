@@ -349,3 +349,46 @@ func Test_Select(t *testing.T) {
 	names := Select(users, func(u user) string { return u.name })
 	assert.Equal([]string{"Ann", "Jack", "Ian"}, names.ToSlice())
 }
+
+func Test_GroupBy(t *testing.T) {
+	assert := assert.New(t)
+	type str struct {
+		key   string
+		value int
+	}
+	testData := []str{
+		{
+			key:   "hello",
+			value: 0,
+		},
+		{
+			key:   "hello",
+			value: 2,
+		},
+		{
+			key:   "world",
+			value: 9,
+		},
+		{
+			key:   "world",
+			value: 7,
+		},
+		{
+			key:   "hello",
+			value: 4,
+		},
+		{
+			key:   "world",
+			value: 5,
+		},
+	}
+
+	act := GroupBy[str, string, int](Linq[str](testData),
+		func(s str) string { return s.key },
+		func(s str) int { return s.value })
+
+	assert.Equal(map[string][]int{
+		"hello": {0, 2, 4},
+		"world": {9, 7, 5},
+	}, act)
+}
