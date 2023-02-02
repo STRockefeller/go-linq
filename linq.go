@@ -17,6 +17,11 @@ type Orderable interface {
 // Methods of Linq will panic when something goes wrong.
 type Linq[T LinqableType] []T
 
+// Linq constructor
+func NewLinq[T LinqableType](slice []T) Linq[T] {
+	return Linq[T](slice)
+}
+
 // Contains determines whether a sequence contains a specified element.
 func (linq Linq[T]) Contains(target T) bool {
 	for _, elem := range linq {
