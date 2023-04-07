@@ -2,15 +2,19 @@ package linq
 
 import (
 	"fmt"
+	"reflect"
 	"sort"
 )
 
-type LinqableType interface {
-	comparable
-}
+// type alias for compatibility with older versions of this package
+type LinqableType = any
 
 type Orderable interface {
 	number | string
+}
+
+func equal[T any](a, b T) bool {
+	return reflect.DeepEqual(a, b)
 }
 
 // Linq simulates C# System.Linq Enumerable methods and System.Collections.Generic List methods.
@@ -25,7 +29,7 @@ func NewLinq[T LinqableType](slice []T) Linq[T] {
 // Contains determines whether a sequence contains a specified element.
 func (linq Linq[T]) Contains(target T) bool {
 	for _, elem := range linq {
-		if elem == target {
+		if equal(elem, target) {
 			return true
 		}
 	}
@@ -462,7 +466,7 @@ func (linq Linq[T]) ForEach(callBack func(T)) {
 func (linq Linq[T]) ReplaceAll(oldValue, newValue T) Linq[T] {
 	res := Linq[T]([]T{})
 	for _, elem := range linq {
-		if elem == oldValue {
+		if equal(elem, oldValue) {
 			res = res.Append(newValue)
 		} else {
 			res = res.Append(elem)
@@ -476,7 +480,7 @@ func (linq *Linq[T]) Remove(item T) bool {
 	res := Linq[T]([]T{})
 	var isRemoved bool
 	for _, elem := range *linq {
-		if elem == item && !isRemoved {
+		if equal(elem, item) && !isRemoved {
 			isRemoved = true
 			continue
 		}
