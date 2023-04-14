@@ -4,14 +4,12 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+
+	"golang.org/x/exp/constraints"
 )
 
 // type alias for compatibility with older versions of this package
 type LinqableType = any
-
-type Orderable interface {
-	number | string
-}
 
 func equal[T any](a, b T) bool {
 	return reflect.DeepEqual(a, b)
@@ -274,7 +272,7 @@ func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
 }
 
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
-func OrderBy[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq[L] {
+func OrderBy[L LinqableType, O constraints.Ordered](linq Linq[L], comparer func(L) O) Linq[L] {
 	sort.SliceStable(linq, func(i, j int) bool {
 		return comparer(linq[i]) < comparer(linq[j])
 	})
@@ -282,7 +280,7 @@ func OrderBy[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq
 }
 
 // OrderByDescending sorts the elements of a sequence in descending order according to a key.
-func OrderByDescending[L LinqableType, O Orderable](linq Linq[L], comparer func(L) O) Linq[L] {
+func OrderByDescending[L LinqableType, O constraints.Ordered](linq Linq[L], comparer func(L) O) Linq[L] {
 	sort.SliceStable(linq, func(i, j int) bool {
 		return comparer(linq[i]) > comparer(linq[j])
 	})

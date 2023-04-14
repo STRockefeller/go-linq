@@ -1,7 +1,9 @@
 package linq
 
+import "golang.org/x/exp/constraints"
+
 type number interface {
-	int | int16 | int32 | int64 | float32 | float64
+	constraints.Integer | constraints.Float
 }
 
 // NumberLinq provides following new methods:
