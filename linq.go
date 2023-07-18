@@ -89,6 +89,7 @@ func (linq Linq[T]) Prepend(t ...T) Linq[T] {
 }
 
 // ElementAt returns the element at a specified index in a sequence.
+// ! this method panics when index is out of range.
 func (linq Linq[T]) ElementAt(index int) T {
 	if index >= len(linq) {
 		panic("linq: ElementAt() out of index")
@@ -111,8 +112,9 @@ func (linq Linq[T]) Empty() Linq[T] {
 }
 
 // First returns the first element in a sequence that satisfies a specified condition.
+// ! this method panics when no element is found.
 func (linq Linq[T]) First(predicate func(T) bool) T {
-	if len(linq) <= 0 {
+	if len(linq) == 0 {
 		panic("linq: First() empty set")
 	}
 	for _, elem := range linq {
@@ -138,6 +140,7 @@ func (linq Linq[T]) FirstOrDefault(predicate func(T) bool) T {
 }
 
 // Last returns the last element of a sequence.
+// ! this method panics when no element is found.
 func (linq Linq[T]) Last(predicate func(T) bool) T {
 	if len(linq) <= 0 {
 		panic("linq: Last() empty set")
@@ -202,12 +205,13 @@ func (linq Linq[T]) Reverse() Linq[T] {
 }
 
 // Take returns a specified number of contiguous elements from the start of a sequence.
-func (linq Linq[T]) Take(n int) Linq[T] {
-	if n < 0 || n >= len(linq) {
+// ! this method panics when count is out of range.
+func (linq Linq[T]) Take(count int) Linq[T] {
+	if count < 0 || count >= len(linq) {
 		panic("Linq: Take() out of index")
 	}
 	res := []T{}
-	for i := 0; i < n; i++ {
+	for i := 0; i < count; i++ {
 		res = append(res, linq[i])
 	}
 	return res
@@ -227,19 +231,21 @@ func (linq Linq[T]) TakeWhile(predicate func(T) bool) Linq[T] {
 }
 
 // TakeLast returns a new enumerable collection that contains the last count elements from source.
-func (linq Linq[T]) TakeLast(n int) Linq[T] {
-	if n < 0 || n >= len(linq) {
+// ! this method panics when count is out of range.
+func (linq Linq[T]) TakeLast(count int) Linq[T] {
+	if count < 0 || count >= len(linq) {
 		panic("Linq: TakeLast() out of index")
 	}
-	return linq.Skip(len(linq) - n)
+	return linq.Skip(len(linq) - count)
 }
 
 // Skip bypasses a specified number of elements in a sequence and then returns the remaining elements.
-func (linq Linq[T]) Skip(n int) Linq[T] {
-	if n < 0 || n >= len(linq) {
+// ! this method panics when count is out of range.
+func (linq Linq[T]) Skip(count int) Linq[T] {
+	if count < 0 || count >= len(linq) {
 		panic("Linq: Skip() out of index")
 	}
-	return linq[n:]
+	return linq[count:]
 }
 
 // SkipWhile bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
@@ -255,11 +261,12 @@ func (linq Linq[T]) SkipWhile(predicate func(T) bool) Linq[T] {
 }
 
 // SkipLast returns a new enumerable collection that contains the elements from source with the last count elements of the source collection omitted.
-func (linq Linq[T]) SkipLast(n int) Linq[T] {
-	if n < 0 || n > len(linq) {
+// ! this method panics when count is out of range.
+func (linq Linq[T]) SkipLast(count int) Linq[T] {
+	if count < 0 || count > len(linq) {
 		panic("Linq: SkipLast() out of index")
 	}
-	return linq.Take(len(linq) - n)
+	return linq.Take(len(linq) - count)
 }
 
 // Select projects each element of linq into a new form by incorporating the element's index.
