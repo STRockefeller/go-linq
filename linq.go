@@ -128,7 +128,7 @@ func (linq Linq[T]) First(predicate func(T) bool) T {
 // FirstOrDefault returns the first element of a sequence, or a default value if the sequence contains no elements.
 func (linq Linq[T]) FirstOrDefault(predicate func(T) bool) T {
 	var defaultValue T
-	if len(linq) <= 0 {
+	if len(linq) == 0 {
 		return defaultValue
 	}
 	for _, elem := range linq {
@@ -142,7 +142,7 @@ func (linq Linq[T]) FirstOrDefault(predicate func(T) bool) T {
 // Last returns the last element of a sequence.
 // ! this method panics when no element is found.
 func (linq Linq[T]) Last(predicate func(T) bool) T {
-	if len(linq) <= 0 {
+	if len(linq) == 0 {
 		panic("linq: Last() empty set")
 	}
 	for i := len(linq) - 1; i >= 0; i-- {
@@ -156,7 +156,7 @@ func (linq Linq[T]) Last(predicate func(T) bool) T {
 // LastOrDefault returns the last element of a sequence, or a specified default value if the sequence contains no elements.
 func (linq Linq[T]) LastOrDefault(predicate func(T) bool) T {
 	var defaultValue T
-	if len(linq) <= 0 {
+	if len(linq) == 0 {
 		return defaultValue
 	}
 	for i := len(linq) - 1; i >= 0; i-- {
