@@ -264,10 +264,10 @@ func (linq Linq[T]) SkipLast(n int) Linq[T] {
 
 // Select projects each element of linq into a new form by incorporating the element's index.
 func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
-	res := Linq[S]{}
-	linq.ForEach(func(t T) {
-		res = res.Append(delegate(t))
-	})
+	res := make([]S, len(linq))
+	for i, elem := range linq {
+		res[i] = delegate(elem)
+	}
 	return res
 }
 
