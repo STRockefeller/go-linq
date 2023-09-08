@@ -278,6 +278,18 @@ func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
 	return res
 }
 
+// SelectMany takes a slice of slices and a selector function,
+// and returns a flattened slice of elements selected by the selector function.
+func SelectMany[T any, U any](linq Linq[T], selector func(T) []U) Linq[U] {
+	var res []U
+
+	linq.ForEach(func(t T) {
+		res = append(res, selector(t)...)
+	})
+
+	return res
+}
+
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
 func OrderBy[L LinqableType, O constraints.Ordered](linq Linq[L], comparer func(L) O) Linq[L] {
 	sort.SliceStable(linq, func(i, j int) bool {

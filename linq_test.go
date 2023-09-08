@@ -392,3 +392,22 @@ func Test_GroupBy(t *testing.T) {
 		"world": {9, 7, 5},
 	}, act)
 }
+
+func TestSelectMany(t *testing.T) {
+	assert := assert.New(t)
+	slice1 := []int{1, 2, 3}
+	slice2 := []int{4, 5, 6}
+	slice3 := []int{7, 8, 9}
+
+	selector := func(x int) []int {
+		return []int{x * x}
+	}
+
+	result := SelectMany([][]int{slice1, slice2, slice3}, func(x []int) []int {
+		return SelectMany(x, selector)
+	})
+
+	expected := []int{1, 4, 9, 16, 25, 36, 49, 64, 81}
+
+	assert.Equal(NewLinq(expected), result)
+}
