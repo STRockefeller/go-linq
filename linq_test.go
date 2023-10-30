@@ -256,17 +256,17 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(5, si.FindLastIndex(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // Sum
-		nsi := NumberLinq[int, int]{Linq: si}
+		nsi := NewNumberLinq[int, int](si)
 		sum := nsi.Sum(func(i int) int { return i })
 		assert.Equal(45, sum)
 	}
 	{ // Max
-		nsi := NumberLinq[int, int]{Linq: si}
+		nsi := NewNumberLinq[int, int](si)
 		max := nsi.Max(func(i int) int { return i })
 		assert.Equal(9, max)
 	}
 	{ // Min
-		nsi := NumberLinq[int, int]{Linq: si}
+		nsi := NewNumberLinq[int, int](si)
 		min := nsi.Min(func(i int) int { return i })
 		assert.Equal(0, min)
 	}

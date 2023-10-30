@@ -14,6 +14,10 @@ type NumberLinq[T LinqableType, N number] struct {
 	Linq[T]
 }
 
+func NewNumberLinq[T LinqableType, N number](items []T) NumberLinq[T, N] {
+	return NumberLinq[T, N]{Linq[T](items)}
+}
+
 func (linq NumberLinq[T, N]) Sum(selector func(T) N) N {
 	var sum N
 	for _, elem := range linq.Linq {
