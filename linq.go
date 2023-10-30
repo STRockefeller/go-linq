@@ -100,7 +100,7 @@ func (linq Linq[T]) ElementAt(index int) T {
 // ElementAtOrDefault returns the element at a specified index in a sequence or a default value if the index is out of range.
 func (linq Linq[T]) ElementAtOrDefault(index int) T {
 	var defaultValue T
-	if index >= len(linq) {
+	if index >= len(linq) || index < 0 {
 		return defaultValue
 	}
 	return linq[index]

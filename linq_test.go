@@ -113,6 +113,18 @@ func Test_Int_Methods(t *testing.T) {
 		actual := si.ElementAt(3)
 		assert.Equal(3, actual)
 	}
+	{ // case ElementAtOrDefault common case
+		actual := si.ElementAtOrDefault(3)
+		assert.Equal(3, actual)
+	}
+	{ // case ElementAtOrDefault out of index
+		actual := si.ElementAtOrDefault(300)
+		assert.Equal(0, actual)
+	}
+	{ // case ElementAtOrDefault invalid index
+		actual := si.ElementAtOrDefault(-3)
+		assert.Equal(0, actual)
+	}
 	{ // case First
 		actual := si.First(func(i int) bool { return i > 2 })
 		assert.Equal(3, actual)
