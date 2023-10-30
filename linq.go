@@ -337,6 +337,9 @@ func (linq Linq[T]) OrderByDescending(comparer func(T) int) Linq[T] {
 
 // Repeat generates a sequence that contains one repeated value.
 func Repeat[T LinqableType](element T, count int) Linq[T] {
+	if count <= 0 {
+		return []T{}
+	}
 	res := make([]T, count)
 	for i := 0; i < count; i++ {
 		res[i] = element
@@ -481,7 +484,7 @@ func (linq Linq[T]) ForEach(callBack func(T)) {
 
 // ReplaceAll replaces old values by new values
 func (linq Linq[T]) ReplaceAll(oldValue, newValue T) Linq[T] {
-	res := Linq[T]([]T{})
+	res := Linq[T](make([]T, 0, len(linq)))
 	for _, elem := range linq {
 		if equal(elem, oldValue) {
 			res = res.Append(newValue)

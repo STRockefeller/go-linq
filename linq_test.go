@@ -2,6 +2,7 @@ package linq
 
 import (
 	"fmt"
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,10 +11,10 @@ import (
 func Test_Int_Methods(t *testing.T) {
 	assert := assert.New(t)
 	si := NewLinq([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
-	{ // case ToSlice
+	{ // ToSlice
 		assert.Equal([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, si.ToSlice())
 	}
-	{ // case ToChannel
+	{ // ToChannel
 		ch := si.ToChannel()
 		var elements []int
 		for element := range ch {
@@ -21,7 +22,7 @@ func Test_Int_Methods(t *testing.T) {
 		}
 		assert.ElementsMatch(si, elements)
 	}
-	{ // case ToChannelWithBuffer
+	{ // ToChannelWithBuffer
 		ch := si.ToChannelWithBuffer(2)
 		var elements []int
 		for element := range ch {
@@ -29,175 +30,175 @@ func Test_Int_Methods(t *testing.T) {
 		}
 		assert.ElementsMatch(si, elements)
 	}
-	{ // case ToMapWithKey
+	{ // ToMapWithKey
 		m := si.ToMapWithKey(func(i int) interface{} { return i * 10 })
 		assert.Equal(5, m[50])
 	}
-	{ // case ConvertToMapWithKey
+	{ // ConvertToMapWithKey
 		m := ConvertToMapWithKey(si, func(i int) float32 { return float32(i) * 0.1 })
 		assert.Equal(5, m[0.5])
 	}
-	{ // case ToMapWithKeyValue
+	{ // ToMapWithKeyValue
 		m := si.ToMapWithKeyValue(func(i int) interface{} { return i * 100 }, func(i int) interface{} { return i * 2 })
 		assert.Equal(4, m[200])
 	}
-	{ // case ConvertToMapWithKeyValue
+	{ // ConvertToMapWithKeyValue
 		m := ConvertToMapWithKeyValue(si, func(i int) int { return i * 100 }, func(i int) int { return i * 2 })
 		assert.Equal(6, m[300])
 	}
-	{ // case Where
+	{ // Where
 		actual := si.Where(func(i int) bool { return i%2 == 0 }).ToSlice()
 		assert.Equal([]int{0, 2, 4, 6, 8}, actual)
 	}
-	{ // case Take
+	{ // Take
 		actual := si.Take(3).ToSlice()
 		assert.Equal([]int{0, 1, 2}, actual)
 	}
-	{ // case Skip
+	{ // Skip
 		actual := si.Skip(5).ToSlice()
 		assert.Equal([]int{5, 6, 7, 8, 9}, actual)
 	}
-	{ // case TakeWhile
+	{ // TakeWhile
 		actual := si.TakeWhile(func(i int) bool { return i < 5 }).ToSlice()
 		assert.Equal([]int{0, 1, 2, 3, 4}, actual)
 	}
-	{ // case SkipWhile
+	{ // SkipWhile
 		actual := si.SkipWhile(func(i int) bool { return i < 8 }).ToSlice()
 		assert.Equal([]int{8, 9}, actual)
 	}
-	{ // case Contains
+	{ // Contains
 		actual := si.Contains(3)
 		assert.Equal(true, actual)
 	}
-	{ // case Contains
+	{ // Contains
 		actual := si.Contains(10)
 		assert.Equal(false, actual)
 	}
-	{ // case Any
+	{ // Any
 		actual := si.Any(func(i int) bool { return i > 10 })
 		assert.Equal(false, actual)
 	}
-	{ // case Any
+	{ // Any
 		actual := si.Any(func(i int) bool { return i < 2 })
 		assert.Equal(true, actual)
 	}
-	{ // case All
+	{ // All
 		actual := si.All(func(i int) bool { return i < 3 })
 		assert.Equal(false, actual)
 	}
-	{ // case All
+	{ // All
 		actual := si.All(func(i int) bool { return i >= 0 })
 		assert.Equal(true, actual)
 	}
-	{ // case TakeLast
+	{ // TakeLast
 		actual := si.TakeLast(3).ToSlice()
 		assert.Equal([]int{7, 8, 9}, actual)
 	}
-	{ // case SkipLast
+	{ // SkipLast
 		actual := si.SkipLast(7).ToSlice()
 		assert.Equal([]int{0, 1, 2}, actual)
 	}
-	{ // case Count
+	{ // Count
 		actual := si.Count(func(i int) bool { return i%2 == 1 })
 		assert.Equal(5, actual)
 	}
-	{ // case Append
+	{ // Append
 		actual := si.Take(2).Append(3).ToSlice()
 		assert.Equal([]int{0, 1, 3}, actual)
 	}
-	{ // case Append multiple value
+	{ // Append multiple value
 		actual := si.Take(2).Append(3, 5, 7).ToSlice()
 		assert.Equal([]int{0, 1, 3, 5, 7}, actual)
 	}
-	{ // case ElementAt
+	{ // ElementAt
 		actual := si.ElementAt(3)
 		assert.Equal(3, actual)
 	}
-	{ // case ElementAtOrDefault common case
+	{ // ElementAtOrDefault common case
 		actual := si.ElementAtOrDefault(3)
 		assert.Equal(3, actual)
 	}
-	{ // case ElementAtOrDefault out of index
+	{ // ElementAtOrDefault out of index
 		actual := si.ElementAtOrDefault(300)
 		assert.Equal(0, actual)
 	}
-	{ // case ElementAtOrDefault invalid index
+	{ // ElementAtOrDefault invalid index
 		actual := si.ElementAtOrDefault(-3)
 		assert.Equal(0, actual)
 	}
-	{ // case First
+	{ // First
 		actual := si.First(func(i int) bool { return i > 2 })
 		assert.Equal(3, actual)
 	}
-	{ // case FirstOrDefault
+	{ // FirstOrDefault
 		actual := si.FirstOrDefault(func(i int) bool { return i > 100 })
 		assert.Equal(0, actual)
 	}
-	{ // case Last
+	{ // Last
 		actual := si.Last(func(i int) bool { return i < 8 })
 		assert.Equal(7, actual)
 	}
-	{ // case LastOrDefault
+	{ // LastOrDefault
 		actual := si.LastOrDefault(func(i int) bool { return i < 8 })
 		assert.Equal(7, actual)
 	}
-	{ // case Prepend
+	{ // Prepend
 		actual := si.Prepend(999).First(func(i int) bool { return true })
 		assert.Equal(999, actual)
 	}
-	{ // case Prepend multiple value
+	{ // Prepend multiple value
 		actual := si.Prepend(999, 888)[:2]
 		assert.Equal(NewLinq([]int{999, 888}), actual)
 	}
-	{ // case Reverse
+	{ // Reverse
 		actual := si.Reverse().ToSlice()
 		assert.Equal([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}, actual)
 	}
-	{ // case Single
+	{ // Single
 		actual := si.Single(func(i int) bool { return i < 1 })
 		assert.Equal(0, actual)
 	}
-	{ // case SingleOeDefault
+	{ // SingleOeDefault
 		actual := si.SingleOrDefault(func(i int) bool { return i > 3 })
 		assert.Equal(0, actual)
 	}
-	{ // case ForEach
+	{ // ForEach
 		si.ForEach(func(i int) { fmt.Println("Foreach test ", i) })
 	}
-	{ // case Remove
+	{ // Remove
 		actual := NewLinq([]int{1, 2, 3, 4})
 		actual2 := actual.Remove(3)
 		assert.True(actual2)
 		assert.Equal(NewLinq([]int{1, 2, 4}), actual)
 	}
-	{ // case RemoveAll
+	{ // RemoveAll
 		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7})
 		actual2 := actual.RemoveAll(func(i int) bool { return i%2 == 1 })
 		assert.Equal(4, actual2)
 		assert.Equal(NewLinq([]int{2, 4, 6}), actual)
 	}
-	{ // case RemoveAt
+	{ // RemoveAt
 		actual := NewLinq([]int{1, 2, 3, 4, 5})
 		actual.RemoveAt(3)
 		assert.Equal(NewLinq([]int{1, 2, 3, 5}), actual)
 	}
-	{ // case RemoveRange
+	{ // RemoveRange
 		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(-1, 3)
 		assert.Equal(fmt.Errorf("argument out of range"), err)
 	}
-	{ // case RemoveRange
+	{ // RemoveRange
 		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(1, 50)
 		assert.Equal(fmt.Errorf("argument out of range"), err)
 	}
-	{ // case RemoveRange
+	{ // RemoveRange
 		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(2, 2)
 		assert.NoError(err)
 		assert.Equal(NewLinq([]int{1, 2, 5, 6, 7, 8, 9}), actual)
 	}
-	{ // case Distinct
+	{ // Distinct
 		actual := NewLinq([]int{1, 2, 3, 1, 5, 5, 2, 3, 8}).Distinct().ToSlice()
 		assert.Equal([]int{1, 2, 3, 5, 8}, actual)
 	}
@@ -266,6 +267,56 @@ func Test_Int_Methods(t *testing.T) {
 	{ // FindLastIndex
 		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
 		assert.Equal(5, si.FindLastIndex(func(i int) bool { return i%2 == 0 }))
+	}
+	{ // GroupBy common case
+		si := NewLinq([]int{1, 2, 3, 4, 5})
+		keyFunc := func(i int) int { return i % 2 }
+		elementFunc := func(i int) string { return strconv.Itoa(i) }
+		expected := map[int][]string{
+			0: {"2", "4"},
+			1: {"1", "3", "5"},
+		}
+
+		actual := GroupBy(si, keyFunc, elementFunc)
+
+		assert.Equal(expected, actual)
+	}
+	{ // GroupBy returns an empty map when the input Linq is empty
+		si := NewLinq([]int{})
+		keyFunc := func(i int) int { return i % 2 }
+		elementFunc := func(i int) string { return strconv.Itoa(i) }
+		expected := map[int][]string{}
+
+		actual := GroupBy(si, keyFunc, elementFunc)
+		assert.Equal(expected, actual)
+	}
+	{ // Repeat numbers
+		element := 5
+		count := 3
+		actual := Repeat(element, count)
+		assert.Equal(NewLinq([]int{5, 5, 5}), actual)
+	}
+	{ // Repeat strings
+		element := "hello"
+		count := 3
+		actual := Repeat(element, count)
+		assert.Equal(NewLinq([]string{"hello", "hello", "hello"}), actual)
+	}
+	{ // Repeat with negative count
+		element := 5
+		count := -3
+		actual := Repeat(element, count)
+		assert.Equal(NewLinq([]int{}), actual)
+	}
+	{ // ReplaceAll
+		si := Linq[int]{1, 2, 3, 4, 5}
+		oldValue := 2
+		newValue := 10
+
+		actual := si.ReplaceAll(oldValue, newValue)
+
+		expected := Linq[int]{1, 10, 3, 4, 5}
+		assert.Equal(expected, actual)
 	}
 	{ // Sum
 		nsi := NewNumberLinq[int, int](si)
