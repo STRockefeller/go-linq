@@ -31,6 +31,7 @@ func NewFromMap[K comparable, V any, T any](m map[K]V, delegate func(K, V) T) li
 }
 
 // linq constructor
+// ! Make sure to close the channel when you are done sending elements to it.
 func NewFromChannel[T any](c <-chan T) linq[T] {
 	res := make([]T, 0)
 	for v := range c {

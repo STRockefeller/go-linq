@@ -468,3 +468,78 @@ func TestSelectMany(t *testing.T) {
 
 	assert.Equal(New(expected), result)
 }
+
+// Call the 'NewFromMap' function with an empty map[K]V and assert that the returned linq[T] is empty.
+func TestNewFromMap_EmptyMap_ReturnsEmptyLinq(t *testing.T) {
+	assert := assert.New(t)
+	m := make(map[int]string)
+	delegate := func(k int, v string) string {
+		return v + strconv.Itoa(k)
+	}
+
+	result := NewFromMap(m, delegate)
+
+	assert.Empty(result, "Expected empty linq")
+}
+
+// Call the 'NewFromMap' function with a nil map[K]V and assert that the returned linq[T] is empty.
+func Test_new_from_map_with_nil_map(t *testing.T) {
+	assert := assert.New(t)
+
+	var m map[int]string
+	delegate := func(k int, v string) string {
+		return v + strconv.Itoa(k)
+	}
+
+	assert.Empty(NewFromMap(m, delegate))
+}
+
+// Call the 'NewFromMap' function with a map[K]V containing one key-value pair and assert that the length of the returned linq[T] is 1.
+func TestNewFromMap_WithOneKeyValuePair_ReturnsLinqWithLengthOne(t *testing.T) {
+	assert := assert.New(t)
+
+	m := map[int]string{1: "value"}
+	delegate := func(k int, v string) string {
+		return v + strconv.Itoa(k)
+	}
+
+	result := NewFromMap(m, delegate)
+
+	assert.Equal(1, len(result))
+}
+
+// Should panic when given a nil delegate function
+func TestNewFromMap_NilDelegate_Panics(t *testing.T) {
+	assert := assert.New(t)
+	m := map[int]string{1: "one", 2: "two", 3: "three"}
+	var delegate func(int, string) string
+
+	assert.Panics(func() {
+		NewFromMap(m, delegate)
+	})
+}
+
+// Returns an empty linq[T] when the channel is closed before any value is sent
+func Test_empty_linq_when_channel_closed_before_any_value_sent(t *testing.T) {
+	c := make(chan int)
+	close(c)
+
+	result := NewFromChannel(c)
+
+	assert.Empty(t, result)
+}
+
+// Returns a linq[T] with all values sent through the channel
+func Test_linq_with_all_values_sent_through_channel(t *testing.T) {
+	c := make(chan int)
+	go func() {
+		c <- 1
+		c <- 2
+		c <- 3
+		close(c)
+	}()
+
+	result := NewFromChannel(c)
+
+	assert.ElementsMatch(t, []int{1, 2, 3}, result)
+}
