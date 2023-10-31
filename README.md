@@ -35,7 +35,7 @@ func linqTest() {
   name string
   age  int
  }
- users := linq.Linq[user]{}
+ users := linq.New([]user{})
  users.Add(user{
   name: "Rockefeller",
   age:  27,
@@ -71,9 +71,9 @@ var testIntegers = []int{7, 5, 3, 9, 5, 1, 7, 4, 1, 0, 3, 6, 9}
 
 func BenchmarkSTRockefeller_linq(b *testing.B) {
  for i := 0; i < b.N; i++ {
-  STRLinq.Linq[string](testStrings).Where(func(s string) bool { return len(s) >= 3 }).Skip(1).Contains("mister")
+  STRLinq.New(testStrings).Where(func(s string) bool { return len(s) >= 3 }).Skip(1).Contains("mister")
 
-  mySlice := STRLinq.Linq[int](testIntegers).Distinct().Where(func(i int) bool { return i > 3 }).ToSlice()
+  mySlice := STRLinq.New(testIntegers).Distinct().Where(func(i int) bool { return i > 3 }).ToSlice()
 
   if false {
    fmt.Print(mySlice)
