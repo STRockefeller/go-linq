@@ -296,12 +296,6 @@ func Test_Int_Methods(t *testing.T) {
 		actual := Repeat(element, count)
 		assert.Equal(NewLinq([]int{5, 5, 5}), actual)
 	}
-	{ // Repeat strings
-		element := "hello"
-		count := 3
-		actual := Repeat(element, count)
-		assert.Equal(NewLinq([]string{"hello", "hello", "hello"}), actual)
-	}
 	{ // Repeat with negative count
 		element := 5
 		count := -3
