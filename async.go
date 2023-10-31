@@ -2,7 +2,7 @@ package linq
 
 import "sync"
 
-func RunInAsync[I comparable, O any](inputs Linq[I], delegate func(I) O) []O {
+func RunInAsync[I comparable, O any](inputs linq[I], delegate func(I) O) []O {
 	res := make([]O, len(inputs))
 	m := sync.Mutex{}
 	wg := sync.WaitGroup{}
@@ -22,7 +22,7 @@ func RunInAsync[I comparable, O any](inputs Linq[I], delegate func(I) O) []O {
 	return res
 }
 
-func (linq Linq[T]) RunInAsyncWithRoutineLimit(delegate func(T), limit int) {
+func (linq linq[T]) RunInAsyncWithRoutineLimit(delegate func(T), limit int) {
 	inputs := make(chan T, 5)
 	go func() {
 		defer close(inputs)

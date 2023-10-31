@@ -8,24 +8,21 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-// type alias for compatibility with older versions of this package
-type LinqableType = any
-
 func equal[T any](a, b T) bool {
 	return reflect.DeepEqual(a, b)
 }
 
-// Linq simulates C# System.Linq Enumerable methods and System.Collections.Generic List methods.
-// Methods of Linq will panic when something goes wrong.
-type Linq[T LinqableType] []T
+// linq simulates C# System.Linq Enumerable methods and System.Collections.Generic List methods.
+// Methods of linq will panic when something goes wrong.
+type linq[T any] []T
 
-// Linq constructor
-func NewLinq[T LinqableType](slice []T) Linq[T] {
-	return Linq[T](slice)
+// linq constructor
+func New[T any](slice []T) linq[T] {
+	return linq[T](slice)
 }
 
-// Linq constructor
-func NewFromMap[K comparable, V any, T LinqableType](m map[K]V, delegate func(K, V) T) Linq[T] {
+// linq constructor
+func NewFromMap[K comparable, V any, T any](m map[K]V, delegate func(K, V) T) linq[T] {
 	res := make([]T, 0, len(m))
 	for k, v := range m {
 		res = append(res, delegate(k, v))
@@ -33,8 +30,8 @@ func NewFromMap[K comparable, V any, T LinqableType](m map[K]V, delegate func(K,
 	return res
 }
 
-// Linq constructor
-func NewFromChannel[T LinqableType](c <-chan T) Linq[T] {
+// linq constructor
+func NewFromChannel[T any](c <-chan T) linq[T] {
 	res := make([]T, 0)
 	for v := range c {
 		res = append(res, v)
@@ -43,8 +40,8 @@ func NewFromChannel[T LinqableType](c <-chan T) Linq[T] {
 }
 
 // Contains determines whether a sequence contains a specified element.
-func (linq Linq[T]) Contains(target T) bool {
-	for _, elem := range linq {
+func (l linq[T]) Contains(target T) bool {
+	for _, elem := range l {
 		if equal(elem, target) {
 			return true
 		}
@@ -53,9 +50,9 @@ func (linq Linq[T]) Contains(target T) bool {
 }
 
 // Count returns a number that represents how many elements in the specified sequence satisfy a condition.
-func (linq Linq[T]) Count(predicate func(T) bool) int {
+func (l linq[T]) Count(predicate func(T) bool) int {
 	var count int
-	for _, elem := range linq {
+	for _, elem := range l {
 		if predicate(elem) {
 			count++
 		}
@@ -64,9 +61,9 @@ func (linq Linq[T]) Count(predicate func(T) bool) int {
 }
 
 // Distinct returns distinct elements from a sequence by using the default equality comparer to compare values.
-func (linq Linq[T]) Distinct() Linq[T] {
-	res := linq.Empty()
-	for _, elem := range linq {
+func (l linq[T]) Distinct() linq[T] {
+	res := l.Empty()
+	for _, elem := range l {
 		if !res.Contains(elem) {
 			res = res.Append(elem)
 		}
@@ -75,8 +72,8 @@ func (linq Linq[T]) Distinct() Linq[T] {
 }
 
 // Any determines whether any element of a sequence satisfies a condition.
-func (linq Linq[T]) Any(predicate func(T) bool) bool {
-	for _, elem := range linq {
+func (l linq[T]) Any(predicate func(T) bool) bool {
+	for _, elem := range l {
 		if predicate(elem) {
 			return true
 		}
@@ -85,8 +82,8 @@ func (linq Linq[T]) Any(predicate func(T) bool) bool {
 }
 
 // All determines whether all elements of a sequence satisfy a condition.
-func (linq Linq[T]) All(predicate func(T) bool) bool {
-	for _, elem := range linq {
+func (l linq[T]) All(predicate func(T) bool) bool {
+	for _, elem := range l {
 		if predicate(elem) {
 			continue
 		} else {
@@ -97,45 +94,45 @@ func (linq Linq[T]) All(predicate func(T) bool) bool {
 }
 
 // Append appends a value to the end of the sequence.
-func (linq Linq[T]) Append(t ...T) Linq[T] {
-	return append(linq, t...)
+func (l linq[T]) Append(t ...T) linq[T] {
+	return append(l, t...)
 }
 
 // Prepend adds a value to the beginning of the sequence.
-func (linq Linq[T]) Prepend(t ...T) Linq[T] {
-	return append(t, linq.ToSlice()...)
+func (l linq[T]) Prepend(t ...T) linq[T] {
+	return append(t, l.ToSlice()...)
 }
 
 // ElementAt returns the element at a specified index in a sequence.
 // ! this method panics when index is out of range.
-func (linq Linq[T]) ElementAt(index int) T {
-	if index >= len(linq) {
+func (l linq[T]) ElementAt(index int) T {
+	if index >= len(l) {
 		panic("linq: ElementAt() out of index")
 	}
-	return linq[index]
+	return l[index]
 }
 
 // ElementAtOrDefault returns the element at a specified index in a sequence or a default value if the index is out of range.
-func (linq Linq[T]) ElementAtOrDefault(index int) T {
+func (l linq[T]) ElementAtOrDefault(index int) T {
 	var defaultValue T
-	if index >= len(linq) || index < 0 {
+	if index >= len(l) || index < 0 {
 		return defaultValue
 	}
-	return linq[index]
+	return l[index]
 }
 
-// Empty returns an empty Linq[T] that has the specified type argument.
-func (linq Linq[T]) Empty() Linq[T] {
-	return Linq[T]{}
+// Empty returns an empty linq[T] that has the specified type argument.
+func (l linq[T]) Empty() linq[T] {
+	return linq[T]{}
 }
 
 // First returns the first element in a sequence that satisfies a specified condition.
 // ! this method panics when no element is found.
-func (linq Linq[T]) First(predicate func(T) bool) T {
-	if len(linq) == 0 {
+func (l linq[T]) First(predicate func(T) bool) T {
+	if len(l) == 0 {
 		panic("linq: First() empty set")
 	}
-	for _, elem := range linq {
+	for _, elem := range l {
 		if predicate(elem) {
 			return elem
 		}
@@ -144,12 +141,12 @@ func (linq Linq[T]) First(predicate func(T) bool) T {
 }
 
 // FirstOrDefault returns the first element of a sequence, or a default value if the sequence contains no elements.
-func (linq Linq[T]) FirstOrDefault(predicate func(T) bool) T {
+func (l linq[T]) FirstOrDefault(predicate func(T) bool) T {
 	var defaultValue T
-	if len(linq) == 0 {
+	if len(l) == 0 {
 		return defaultValue
 	}
-	for _, elem := range linq {
+	for _, elem := range l {
 		if predicate(elem) {
 			return elem
 		}
@@ -159,53 +156,53 @@ func (linq Linq[T]) FirstOrDefault(predicate func(T) bool) T {
 
 // Last returns the last element of a sequence.
 // ! this method panics when no element is found.
-func (linq Linq[T]) Last(predicate func(T) bool) T {
-	if len(linq) == 0 {
+func (l linq[T]) Last(predicate func(T) bool) T {
+	if len(l) == 0 {
 		panic("linq: Last() empty set")
 	}
-	for i := len(linq) - 1; i >= 0; i-- {
-		if predicate(linq[i]) {
-			return linq[i]
+	for i := len(l) - 1; i >= 0; i-- {
+		if predicate(l[i]) {
+			return l[i]
 		}
 	}
 	panic("linq: Last() no match element in the slice")
 }
 
 // LastOrDefault returns the last element of a sequence, or a specified default value if the sequence contains no elements.
-func (linq Linq[T]) LastOrDefault(predicate func(T) bool) T {
+func (l linq[T]) LastOrDefault(predicate func(T) bool) T {
 	var defaultValue T
-	if len(linq) == 0 {
+	if len(l) == 0 {
 		return defaultValue
 	}
-	for i := len(linq) - 1; i >= 0; i-- {
-		if predicate(linq[i]) {
-			return linq[i]
+	for i := len(l) - 1; i >= 0; i-- {
+		if predicate(l[i]) {
+			return l[i]
 		}
 	}
 	return defaultValue
 }
 
 // Single returns the only element of a sequence that satisfies a specified condition, and panics if more than one such element exists.
-func (linq Linq[T]) Single(predicate func(T) bool) T {
-	if linq.Count(predicate) == 1 {
-		return linq.First(predicate)
+func (l linq[T]) Single(predicate func(T) bool) T {
+	if l.Count(predicate) == 1 {
+		return l.First(predicate)
 	}
 	panic("linq: Single() eligible data count is not unique")
 }
 
 // SingleOrDefault returns the only element of a sequence, or a default value of T if the sequence is empty.
-func (linq Linq[T]) SingleOrDefault(predicate func(T) bool) T {
+func (l linq[T]) SingleOrDefault(predicate func(T) bool) T {
 	var defaultValue T
-	if linq.Count(predicate) == 1 {
-		return linq.First(predicate)
+	if l.Count(predicate) == 1 {
+		return l.First(predicate)
 	}
 	return defaultValue
 }
 
 // Where filters a sequence of values based on a predicate.
-func (linq Linq[T]) Where(predicate func(T) bool) Linq[T] {
+func (l linq[T]) Where(predicate func(T) bool) linq[T] {
 	res := []T{}
-	for _, elem := range linq {
+	for _, elem := range l {
 		if predicate(elem) {
 			res = append(res, elem)
 		}
@@ -214,33 +211,33 @@ func (linq Linq[T]) Where(predicate func(T) bool) Linq[T] {
 }
 
 // Reverse inverts the order of the elements in a sequence.
-func (linq Linq[T]) Reverse() Linq[T] {
-	res := Linq[T](make([]T, len(linq)))
-	for i, j := 0, len(linq)-1; i < j; i, j = i+1, j-1 {
-		res[i], res[j] = linq[j], linq[i]
+func (l linq[T]) Reverse() linq[T] {
+	res := linq[T](make([]T, len(l)))
+	for i, j := 0, len(l)-1; i < j; i, j = i+1, j-1 {
+		res[i], res[j] = l[j], l[i]
 	}
 	return res
 }
 
 // Take returns a specified number of contiguous elements from the start of a sequence.
 // ! this method panics when count is out of range.
-func (linq Linq[T]) Take(count int) Linq[T] {
-	if count < 0 || count >= len(linq) {
+func (l linq[T]) Take(count int) linq[T] {
+	if count < 0 || count >= len(l) {
 		panic("Linq: Take() out of index")
 	}
 	res := []T{}
 	for i := 0; i < count; i++ {
-		res = append(res, linq[i])
+		res = append(res, l[i])
 	}
 	return res
 }
 
 // TakeWhile returns elements from a sequence as long as a specified condition is true. The element's index is used in the logic of the predicate function.
-func (linq Linq[T]) TakeWhile(predicate func(T) bool) Linq[T] {
+func (l linq[T]) TakeWhile(predicate func(T) bool) linq[T] {
 	res := []T{}
-	for i := 0; i < len(linq); i++ {
-		if predicate(linq[i]) {
-			res = append(res, linq[i])
+	for i := 0; i < len(l); i++ {
+		if predicate(l[i]) {
+			res = append(res, l[i])
 		} else {
 			return res
 		}
@@ -250,47 +247,47 @@ func (linq Linq[T]) TakeWhile(predicate func(T) bool) Linq[T] {
 
 // TakeLast returns a new enumerable collection that contains the last count elements from source.
 // ! this method panics when count is out of range.
-func (linq Linq[T]) TakeLast(count int) Linq[T] {
-	if count < 0 || count >= len(linq) {
+func (l linq[T]) TakeLast(count int) linq[T] {
+	if count < 0 || count >= len(l) {
 		panic("Linq: TakeLast() out of index")
 	}
-	return linq.Skip(len(linq) - count)
+	return l.Skip(len(l) - count)
 }
 
 // Skip bypasses a specified number of elements in a sequence and then returns the remaining elements.
 // ! this method panics when count is out of range.
-func (linq Linq[T]) Skip(count int) Linq[T] {
-	if count < 0 || count >= len(linq) {
+func (l linq[T]) Skip(count int) linq[T] {
+	if count < 0 || count >= len(l) {
 		panic("Linq: Skip() out of index")
 	}
-	return linq[count:]
+	return l[count:]
 }
 
 // SkipWhile bypasses elements in a sequence as long as a specified condition is true and then returns the remaining elements. The element's index is used in the logic of the predicate function.
-func (linq Linq[T]) SkipWhile(predicate func(T) bool) Linq[T] {
-	for i := 0; i < len(linq); i++ {
-		if predicate(linq[i]) {
+func (l linq[T]) SkipWhile(predicate func(T) bool) linq[T] {
+	for i := 0; i < len(l); i++ {
+		if predicate(l[i]) {
 			continue
 		} else {
-			return linq[i:]
+			return l[i:]
 		}
 	}
-	return Linq[T]{}
+	return linq[T]{}
 }
 
 // SkipLast returns a new enumerable collection that contains the elements from source with the last count elements of the source collection omitted.
 // ! this method panics when count is out of range.
-func (linq Linq[T]) SkipLast(count int) Linq[T] {
-	if count < 0 || count > len(linq) {
+func (l linq[T]) SkipLast(count int) linq[T] {
+	if count < 0 || count > len(l) {
 		panic("Linq: SkipLast() out of index")
 	}
-	return linq.Take(len(linq) - count)
+	return l.Take(len(l) - count)
 }
 
 // Select projects each element of linq into a new form by incorporating the element's index.
-func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
-	res := make([]S, len(linq))
-	for i, elem := range linq {
+func Select[T, S any](l linq[T], delegate func(T) S) linq[S] {
+	res := make([]S, len(l))
+	for i, elem := range l {
 		res[i] = delegate(elem)
 	}
 	return res
@@ -298,10 +295,10 @@ func Select[T, S LinqableType](linq Linq[T], delegate func(T) S) Linq[S] {
 
 // SelectMany takes a slice of slices and a selector function,
 // and returns a flattened slice of elements selected by the selector function.
-func SelectMany[T any, U any](linq Linq[T], selector func(T) []U) Linq[U] {
+func SelectMany[T any, U any](l linq[T], selector func(T) []U) linq[U] {
 	var res []U
 
-	linq.ForEach(func(t T) {
+	l.ForEach(func(t T) {
 		res = append(res, selector(t)...)
 	})
 
@@ -309,24 +306,24 @@ func SelectMany[T any, U any](linq Linq[T], selector func(T) []U) Linq[U] {
 }
 
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
-func OrderBy[L LinqableType, O constraints.Ordered](linq Linq[L], comparer func(L) O) Linq[L] {
-	sort.SliceStable(linq, func(i, j int) bool {
-		return comparer(linq[i]) < comparer(linq[j])
+func OrderBy[L any, O constraints.Ordered](l linq[L], comparer func(L) O) linq[L] {
+	sort.SliceStable(l, func(i, j int) bool {
+		return comparer(l[i]) < comparer(l[j])
 	})
-	return linq
+	return l
 }
 
 // OrderByDescending sorts the elements of a sequence in descending order according to a key.
-func OrderByDescending[L LinqableType, O constraints.Ordered](linq Linq[L], comparer func(L) O) Linq[L] {
-	sort.SliceStable(linq, func(i, j int) bool {
-		return comparer(linq[i]) > comparer(linq[j])
+func OrderByDescending[L any, O constraints.Ordered](l linq[L], comparer func(L) O) linq[L] {
+	sort.SliceStable(l, func(i, j int) bool {
+		return comparer(l[i]) > comparer(l[j])
 	})
-	return linq
+	return l
 }
 
-func GroupBy[L LinqableType, K comparable, E any](linq Linq[L], key func(L) K, element func(L) E) map[K][]E {
+func GroupBy[L any, K comparable, E any](l linq[L], key func(L) K, element func(L) E) map[K][]E {
 	res := make(map[K][]E)
-	linq.ForEach(func(l L) {
+	l.ForEach(func(l L) {
 		elem := element(l)
 		if _, ok := res[key(l)]; ok {
 			res[key(l)] = append(res[key(l)], elem)
@@ -338,23 +335,23 @@ func GroupBy[L LinqableType, K comparable, E any](linq Linq[L], key func(L) K, e
 }
 
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
-func (linq Linq[T]) OrderBy(comparer func(T) int) Linq[T] {
-	sort.SliceStable(linq, func(i, j int) bool {
-		return comparer(linq[i]) < comparer(linq[j])
+func (l linq[T]) OrderBy(comparer func(T) int) linq[T] {
+	sort.SliceStable(l, func(i, j int) bool {
+		return comparer(l[i]) < comparer(l[j])
 	})
-	return linq
+	return l
 }
 
 // OrderByDescending sorts the elements of a sequence in descending order according to a key.
-func (linq Linq[T]) OrderByDescending(comparer func(T) int) Linq[T] {
-	sort.SliceStable(linq, func(i, j int) bool {
-		return comparer(linq[i]) > comparer(linq[j])
+func (l linq[T]) OrderByDescending(comparer func(T) int) linq[T] {
+	sort.SliceStable(l, func(i, j int) bool {
+		return comparer(l[i]) > comparer(l[j])
 	})
-	return linq
+	return l
 }
 
 // Repeat generates a sequence that contains one repeated value.
-func Repeat[T LinqableType](element T, count int) Linq[T] {
+func Repeat[T any](element T, count int) linq[T] {
 	if count <= 0 {
 		return []T{}
 	}
@@ -365,28 +362,28 @@ func Repeat[T LinqableType](element T, count int) Linq[T] {
 	return res
 }
 
-// ToSlice creates a slice from a Linq[T].
-func (linq Linq[T]) ToSlice() []T {
-	res := make([]T, len(linq))
-	copy(res, linq)
+// ToSlice creates a slice from a linq[T].
+func (l linq[T]) ToSlice() []T {
+	res := make([]T, len(l))
+	copy(res, l)
 	return res
 }
 
-// ToChannel creates a channel with values in Linq[T]
-func (linq Linq[T]) ToChannel() <-chan T {
-	res := make(chan T, len(linq))
-	linq.ForEach(func(t T) {
+// ToChannel creates a channel with values in linq[T]
+func (l linq[T]) ToChannel() <-chan T {
+	res := make(chan T, len(l))
+	l.ForEach(func(t T) {
 		res <- t
 	})
 	close(res)
 	return res
 }
 
-// ToChannelWithBuffer creates a channel with values in Linq[T] with specified buffer. (async method)
-func (linq Linq[T]) ToChannelWithBuffer(buffer int) <-chan T {
+// ToChannelWithBuffer creates a channel with values in linq[T] with specified buffer. (async method)
+func (l linq[T]) ToChannelWithBuffer(buffer int) <-chan T {
 	res := make(chan T, buffer)
 	go func() {
-		linq.ForEach(func(t T) {
+		l.ForEach(func(t T) {
 			res <- t
 		})
 		close(res)
@@ -394,37 +391,37 @@ func (linq Linq[T]) ToChannelWithBuffer(buffer int) <-chan T {
 	return res
 }
 
-// Creates a map[interface{}]T from an Linq[T] according to a specified key selector function.
-func (linq Linq[T]) ToMapWithKey(keySelector func(T) interface{}) map[interface{}]T {
+// Creates a map[interface{}]T from an linq[T] according to a specified key selector function.
+func (l linq[T]) ToMapWithKey(keySelector func(T) interface{}) map[interface{}]T {
 	res := make(map[interface{}]T)
-	linq.ForEach(func(t T) {
+	l.ForEach(func(t T) {
 		res[keySelector(t)] = t
 	})
 	return res
 }
 
-// Creates a map[TKey]TSource from an Linq[TSource] according to a specified key selector function.
-func ConvertToMapWithKey[TSource LinqableType, TKey comparable](linq Linq[TSource], keySelector func(TSource) TKey) map[TKey]TSource {
+// Creates a map[TKey]TSource from an linq[TSource] according to a specified key selector function.
+func ConvertToMapWithKey[TSource any, TKey comparable](l linq[TSource], keySelector func(TSource) TKey) map[TKey]TSource {
 	res := make(map[TKey]TSource)
-	linq.ForEach(func(t TSource) {
+	l.ForEach(func(t TSource) {
 		res[keySelector(t)] = t
 	})
 	return res
 }
 
-// Creates a map[interface{}]interface from an Linq[T] according to a specified key selector function.
-func (linq Linq[T]) ToMapWithKeyValue(keySelector func(T) interface{}, valueSelector func(T) interface{}) map[interface{}]interface{} {
+// Creates a map[interface{}]interface from an linq[T] according to a specified key selector function.
+func (l linq[T]) ToMapWithKeyValue(keySelector func(T) interface{}, valueSelector func(T) interface{}) map[interface{}]interface{} {
 	res := make(map[interface{}]interface{})
-	linq.ForEach(func(t T) {
+	l.ForEach(func(t T) {
 		res[keySelector(t)] = valueSelector(t)
 	})
 	return res
 }
 
-// Creates a map[TKey,TValue] from an Linq[TSource] according to specified key selector and element selector functions.
-func ConvertToMapWithKeyValue[TSource LinqableType, TKey comparable, TValue any](linq Linq[TSource], keySelector func(TSource) TKey, valueSelector func(TSource) TValue) map[TKey]TValue {
+// Creates a map[TKey,TValue] from an linq[TSource] according to specified key selector and element selector functions.
+func ConvertToMapWithKeyValue[TSource any, TKey comparable, TValue any](l linq[TSource], keySelector func(TSource) TKey, valueSelector func(TSource) TValue) map[TKey]TValue {
 	res := make(map[TKey]TValue)
-	linq.ForEach(func(t TSource) {
+	l.ForEach(func(t TSource) {
 		res[keySelector(t)] = valueSelector(t)
 	})
 	return res
@@ -432,44 +429,44 @@ func ConvertToMapWithKeyValue[TSource LinqableType, TKey comparable, TValue any]
 
 // #region not linq
 
-// Add adds an object to the end of the Linq[T].
-func (linq *Linq[T]) Add(element T) {
-	*linq = append(*linq, element)
+// Add adds an object to the end of the linq[T].
+func (l *linq[T]) Add(element T) {
+	*l = append(*l, element)
 }
 
-// AddRange adds the elements of the specified collection to the end of the Linq[T].
-func (linq *Linq[T]) AddRange(collection Linq[T]) {
-	*linq = append(*linq, collection...)
+// AddRange adds the elements of the specified collection to the end of the linq[T].
+func (l *linq[T]) AddRange(collection linq[T]) {
+	*l = append(*l, collection...)
 }
 
-// Clear removes all elements from the Linq[T].
-func (linq *Linq[T]) Clear() {
-	*linq = Linq[T](make([]T, cap(linq.ToSlice())))
+// Clear removes all elements from the linq[T].
+func (l *linq[T]) Clear() {
+	*l = linq[T](make([]T, cap(l.ToSlice())))
 }
 
-// Clone returns a copy of Linq[T]
-func (linq Linq[T]) Clone() Linq[T] {
-	return linq.ToSlice()
+// Clone returns a copy of linq[T]
+func (l linq[T]) Clone() linq[T] {
+	return l.ToSlice()
 }
 
-// Exists determines whether the Linq[T] contains elements that match the conditions defined by the specified predicate.
-func (linq Linq[T]) Exists(predicate func(T) bool) bool {
-	return linq.Any(predicate)
+// Exists determines whether the linq[T] contains elements that match the conditions defined by the specified predicate.
+func (l linq[T]) Exists(predicate func(T) bool) bool {
+	return l.Any(predicate)
 }
 
-// Find Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire Linq[T].
-func (linq Linq[T]) Find(predicate func(T) bool) T {
-	return linq.FirstOrDefault(predicate)
+// Find Searches for an element that matches the conditions defined by the specified predicate, and returns the first occurrence within the entire linq[T].
+func (l linq[T]) Find(predicate func(T) bool) T {
+	return l.FirstOrDefault(predicate)
 }
 
 // FindAll retrieves all the elements that match the conditions defined by the specified predicate.
-func (linq Linq[T]) FindAll(predicate func(T) bool) Linq[T] {
-	return linq.Where(predicate)
+func (l linq[T]) FindAll(predicate func(T) bool) linq[T] {
+	return l.Where(predicate)
 }
 
-// FindIndex searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire Linq[T].
-func (linq Linq[T]) FindIndex(predicate func(T) bool) int {
-	for i, elem := range linq {
+// FindIndex searches for an element that matches the conditions defined by the specified predicate, and returns the zero-based index of the first occurrence within the entire linq[T].
+func (l linq[T]) FindIndex(predicate func(T) bool) int {
+	for i, elem := range l {
 		if predicate(elem) {
 			return i
 		}
@@ -477,15 +474,15 @@ func (linq Linq[T]) FindIndex(predicate func(T) bool) int {
 	return -1
 }
 
-// FindLast searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire Linq[T].
-func (linq Linq[T]) FindLast(predicate func(T) bool) T {
-	return linq.LastOrDefault(predicate)
+// FindLast searches for an element that matches the conditions defined by the specified predicate, and returns the last occurrence within the entire linq[T].
+func (l linq[T]) FindLast(predicate func(T) bool) T {
+	return l.LastOrDefault(predicate)
 }
 
-// FindLastIndex searches for an element that matches the conditions defined by a specified predicate, and returns the zero-based index of the last occurrence within the Linq[T] or a portion of it.
-func (linq Linq[T]) FindLastIndex(predicate func(T) bool) int {
+// FindLastIndex searches for an element that matches the conditions defined by a specified predicate, and returns the zero-based index of the last occurrence within the linq[T] or a portion of it.
+func (l linq[T]) FindLastIndex(predicate func(T) bool) int {
 	res := -1
-	for i, elem := range linq {
+	for i, elem := range l {
 		if predicate(elem) {
 			res = i
 		}
@@ -493,17 +490,17 @@ func (linq Linq[T]) FindLastIndex(predicate func(T) bool) int {
 	return res
 }
 
-// ForEach performs the specified action on each element of the Linq[T].
-func (linq Linq[T]) ForEach(callBack func(T)) {
-	for _, elem := range linq {
+// ForEach performs the specified action on each element of the linq[T].
+func (l linq[T]) ForEach(callBack func(T)) {
+	for _, elem := range l {
 		callBack(elem)
 	}
 }
 
 // ReplaceAll replaces old values by new values
-func (linq Linq[T]) ReplaceAll(oldValue, newValue T) Linq[T] {
-	res := Linq[T](make([]T, 0, len(linq)))
-	for _, elem := range linq {
+func (l linq[T]) ReplaceAll(oldValue, newValue T) linq[T] {
+	res := linq[T](make([]T, 0, len(l)))
+	for _, elem := range l {
 		if equal(elem, oldValue) {
 			res = res.Append(newValue)
 		} else {
@@ -513,62 +510,62 @@ func (linq Linq[T]) ReplaceAll(oldValue, newValue T) Linq[T] {
 	return res
 }
 
-// Remove removes the first occurrence of a specific object from the Linq[T].
-func (linq *Linq[T]) Remove(item T) bool {
-	res := Linq[T]([]T{})
+// Remove removes the first occurrence of a specific object from the linq[T].
+func (l *linq[T]) Remove(item T) bool {
+	res := linq[T]([]T{})
 	var isRemoved bool
-	for _, elem := range *linq {
+	for _, elem := range *l {
 		if equal(elem, item) && !isRemoved {
 			isRemoved = true
 			continue
 		}
 		res = res.Append(elem)
 	}
-	*linq = res
+	*l = res
 	return isRemoved
 }
 
 // RemoveAll removes all the elements that match the conditions defined by the specified predicate.
-func (linq *Linq[T]) RemoveAll(predicate func(T) bool) int {
+func (l *linq[T]) RemoveAll(predicate func(T) bool) int {
 	var count int
-	res := Linq[T]([]T{})
-	for _, elem := range *linq {
+	res := linq[T]([]T{})
+	for _, elem := range *l {
 		if predicate(elem) {
 			count++
 			continue
 		}
 		res = res.Append(elem)
 	}
-	*linq = res
+	*l = res
 	return count
 }
 
-// RemoveAt removes the element at the specified index of the Linq[T].
-func (linq *Linq[T]) RemoveAt(index int) {
-	res := Linq[T]([]T{})
-	for i := 0; i < len(*linq); i++ {
+// RemoveAt removes the element at the specified index of the linq[T].
+func (l *linq[T]) RemoveAt(index int) {
+	res := linq[T]([]T{})
+	for i := 0; i < len(*l); i++ {
 		if i == index {
 			continue
 		}
-		res = res.Append((*linq)[i])
+		res = res.Append((*l)[i])
 	}
-	*linq = res
+	*l = res
 }
 
-// RemoveRange removes a range of elements from the Linq[T].
-func (linq *Linq[T]) RemoveRange(index, count int) error {
-	if index < 0 || count < 0 || index+count > len(*linq) {
+// RemoveRange removes a range of elements from the linq[T].
+func (l *linq[T]) RemoveRange(index, count int) error {
+	if index < 0 || count < 0 || index+count > len(*l) {
 		return fmt.Errorf("argument out of range")
 	}
-	res := Linq[T]([]T{})
-	for i := 0; i < len(*linq); i++ {
+	res := linq[T]([]T{})
+	for i := 0; i < len(*l); i++ {
 		if i >= index && count != 0 {
 			count--
 			continue
 		}
-		res = res.Append((*linq)[i])
+		res = res.Append((*l)[i])
 	}
-	*linq = res
+	*l = res
 	return nil
 }
 

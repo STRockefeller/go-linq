@@ -10,25 +10,25 @@ type number interface {
 //  - Sum
 //  - Max
 //  - Min
-type NumberLinq[T LinqableType, N number] struct {
-	Linq[T]
+type NumberLinq[T any, N number] struct {
+	linq[T]
 }
 
-func NewNumberLinq[T LinqableType, N number](items []T) NumberLinq[T, N] {
-	return NumberLinq[T, N]{Linq[T](items)}
+func NewNumberLinq[T any, N number](items []T) NumberLinq[T, N] {
+	return NumberLinq[T, N]{linq[T](items)}
 }
 
-func (linq NumberLinq[T, N]) Sum(selector func(T) N) N {
+func (nl NumberLinq[T, N]) Sum(selector func(T) N) N {
 	var sum N
-	for _, elem := range linq.Linq {
+	for _, elem := range nl.linq {
 		sum += selector(elem)
 	}
 	return sum
 }
 
-func (linq NumberLinq[T, N]) Max(selector func(T) N) N {
+func (nl NumberLinq[T, N]) Max(selector func(T) N) N {
 	var max N
-	for i, elem := range linq.Linq {
+	for i, elem := range nl.linq {
 		num := selector(elem)
 		if i == 0 || num > max {
 			max = num
@@ -37,9 +37,9 @@ func (linq NumberLinq[T, N]) Max(selector func(T) N) N {
 	return max
 }
 
-func (linq NumberLinq[T, N]) Min(selector func(T) N) N {
+func (nl NumberLinq[T, N]) Min(selector func(T) N) N {
 	var min N
-	for i, elem := range linq.Linq {
+	for i, elem := range nl.linq {
 		num := selector(elem)
 		if i == 0 || num < min {
 			min = num

@@ -10,7 +10,7 @@ import (
 
 func Test_Int_Methods(t *testing.T) {
 	assert := assert.New(t)
-	si := NewLinq([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
+	si := New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9})
 	{ // ToSlice
 		assert.Equal([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, si.ToSlice())
 	}
@@ -148,7 +148,7 @@ func Test_Int_Methods(t *testing.T) {
 	}
 	{ // Prepend multiple value
 		actual := si.Prepend(999, 888)[:2]
-		assert.Equal(NewLinq([]int{999, 888}), actual)
+		assert.Equal(New([]int{999, 888}), actual)
 	}
 	{ // Reverse
 		actual := si.Reverse().ToSlice()
@@ -166,110 +166,110 @@ func Test_Int_Methods(t *testing.T) {
 		si.ForEach(func(i int) { fmt.Println("Foreach test ", i) })
 	}
 	{ // Remove
-		actual := NewLinq([]int{1, 2, 3, 4})
+		actual := New([]int{1, 2, 3, 4})
 		actual2 := actual.Remove(3)
 		assert.True(actual2)
-		assert.Equal(NewLinq([]int{1, 2, 4}), actual)
+		assert.Equal(New([]int{1, 2, 4}), actual)
 	}
 	{ // RemoveAll
-		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7})
+		actual := New([]int{1, 2, 3, 4, 5, 6, 7})
 		actual2 := actual.RemoveAll(func(i int) bool { return i%2 == 1 })
 		assert.Equal(4, actual2)
-		assert.Equal(NewLinq([]int{2, 4, 6}), actual)
+		assert.Equal(New([]int{2, 4, 6}), actual)
 	}
 	{ // RemoveAt
-		actual := NewLinq([]int{1, 2, 3, 4, 5})
+		actual := New([]int{1, 2, 3, 4, 5})
 		actual.RemoveAt(3)
-		assert.Equal(NewLinq([]int{1, 2, 3, 5}), actual)
+		assert.Equal(New([]int{1, 2, 3, 5}), actual)
 	}
 	{ // RemoveRange
-		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+		actual := New([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(-1, 3)
 		assert.Equal(fmt.Errorf("argument out of range"), err)
 	}
 	{ // RemoveRange
-		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+		actual := New([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(1, 50)
 		assert.Equal(fmt.Errorf("argument out of range"), err)
 	}
 	{ // RemoveRange
-		actual := NewLinq([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
+		actual := New([]int{1, 2, 3, 4, 5, 6, 7, 8, 9})
 		err := actual.RemoveRange(2, 2)
 		assert.NoError(err)
-		assert.Equal(NewLinq([]int{1, 2, 5, 6, 7, 8, 9}), actual)
+		assert.Equal(New([]int{1, 2, 5, 6, 7, 8, 9}), actual)
 	}
 	{ // Distinct
-		actual := NewLinq([]int{1, 2, 3, 1, 5, 5, 2, 3, 8}).Distinct().ToSlice()
+		actual := New([]int{1, 2, 3, 1, 5, 5, 2, 3, 8}).Distinct().ToSlice()
 		assert.Equal([]int{1, 2, 3, 5, 8}, actual)
 	}
 	{ // OrderBy
-		si := NewLinq([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
 		orderedSi := si.OrderBy(func(i int) int { return i })
-		assert.Equal(NewLinq([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
+		assert.Equal(New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
 	}
 	{ // OrderByDescending
-		si := NewLinq([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
 		orderedSi := si.OrderByDescending(func(i int) int { return i })
-		assert.Equal(NewLinq([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
+		assert.Equal(New([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
 	}
 	{ // another Order
-		si := NewLinq([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
 		orderedSi := OrderBy(si, func(i int) int { return i })
-		assert.Equal(NewLinq([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
+		assert.Equal(New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
 	}
 	{ // another Order
-		si := NewLinq([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
 		orderedSi := OrderBy(si, func(i int) int64 { return int64(i * 20) })
-		assert.Equal(NewLinq([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
+		assert.Equal(New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
 	}
 	{ // another OrderByDescending
-		si := NewLinq([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
+		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
 		orderedSi := OrderByDescending(si, func(i int) int { return i })
-		assert.Equal(NewLinq([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
+		assert.Equal(New([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
 	}
 	{ // Add
-		si := NewLinq([]int{1, 2, 3})
+		si := New([]int{1, 2, 3})
 		si.Add(4)
-		assert.Equal(NewLinq([]int{1, 2, 3, 4}), si)
+		assert.Equal(New([]int{1, 2, 3, 4}), si)
 	}
 	{ // Add Range
-		si := NewLinq([]int{1, 2, 3})
+		si := New([]int{1, 2, 3})
 		si.AddRange([]int{4, 5, 6})
-		assert.Equal(si, NewLinq([]int{1, 2, 3, 4, 5, 6}))
+		assert.Equal(si, New([]int{1, 2, 3, 4, 5, 6}))
 	}
 	{ // Clear
-		si := NewLinq([]int{1, 2, 3})
+		si := New([]int{1, 2, 3})
 		capacity := cap(si.ToSlice())
 		si.Clear()
-		assert.Equal(si, NewLinq(make([]int, capacity)))
+		assert.Equal(si, New(make([]int, capacity)))
 	}
 	{ // Exists
-		si := NewLinq([]int{1, 2, 3})
+		si := New([]int{1, 2, 3})
 		assert.True(si.Exists(func(i int) bool { return i == 2 }))
 		assert.False(si.Exists(func(i int) bool { return i-10 > 0 }))
 	}
 	{ // Find
-		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
+		si := New([]int{1, 3, 5, 6, 7, 8, 9})
 		assert.Equal(6, si.Find(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // FindAll
-		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
-		assert.Equal(NewLinq([]int{6, 8}), si.FindAll(func(i int) bool { return i%2 == 0 }))
+		si := New([]int{1, 3, 5, 6, 7, 8, 9})
+		assert.Equal(New([]int{6, 8}), si.FindAll(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // FindIndex
-		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
+		si := New([]int{1, 3, 5, 6, 7, 8, 9})
 		assert.Equal(3, si.FindIndex(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // FindLast
-		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
+		si := New([]int{1, 3, 5, 6, 7, 8, 9})
 		assert.Equal(8, si.FindLast(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // FindLastIndex
-		si := NewLinq([]int{1, 3, 5, 6, 7, 8, 9})
+		si := New([]int{1, 3, 5, 6, 7, 8, 9})
 		assert.Equal(5, si.FindLastIndex(func(i int) bool { return i%2 == 0 }))
 	}
 	{ // GroupBy common case
-		si := NewLinq([]int{1, 2, 3, 4, 5})
+		si := New([]int{1, 2, 3, 4, 5})
 		keyFunc := func(i int) int { return i % 2 }
 		elementFunc := func(i int) string { return strconv.Itoa(i) }
 		expected := map[int][]string{
@@ -282,7 +282,7 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(expected, actual)
 	}
 	{ // GroupBy returns an empty map when the input Linq is empty
-		si := NewLinq([]int{})
+		si := New([]int{})
 		keyFunc := func(i int) int { return i % 2 }
 		elementFunc := func(i int) string { return strconv.Itoa(i) }
 		expected := map[int][]string{}
@@ -294,22 +294,22 @@ func Test_Int_Methods(t *testing.T) {
 		element := 5
 		count := 3
 		actual := Repeat(element, count)
-		assert.Equal(NewLinq([]int{5, 5, 5}), actual)
+		assert.Equal(New([]int{5, 5, 5}), actual)
 	}
 	{ // Repeat with negative count
 		element := 5
 		count := -3
 		actual := Repeat(element, count)
-		assert.Equal(NewLinq([]int{}), actual)
+		assert.Equal(New([]int{}), actual)
 	}
 	{ // ReplaceAll
-		si := Linq[int]{1, 2, 3, 4, 5}
+		si := New([]int{1, 2, 3, 4, 5})
 		oldValue := 2
 		newValue := 10
 
 		actual := si.ReplaceAll(oldValue, newValue)
 
-		expected := Linq[int]{1, 10, 3, 4, 5}
+		expected := New([]int{1, 10, 3, 4, 5})
 		assert.Equal(expected, actual)
 	}
 	{ // Sum
@@ -340,7 +340,7 @@ func Test_Struct_Methods(t *testing.T) {
 		actual := Repeat(user{
 			name: "Rockefeller",
 		}, 3)
-		expected := Linq[user]{
+		expected := New([]user{
 			user{
 				name: "Rockefeller",
 			},
@@ -350,11 +350,11 @@ func Test_Struct_Methods(t *testing.T) {
 			user{
 				name: "Rockefeller",
 			},
-		}
+		})
 		assert.Equal(expected, actual)
 	}
 	{ // other
-		users := Linq[user]{
+		users := New([]user{
 			{name: "A1"},
 			{name: "A2"},
 			{name: "B1"},
@@ -364,20 +364,20 @@ func Test_Struct_Methods(t *testing.T) {
 			{name: "A3"},
 			{name: "C3"},
 			{name: "A99"},
-		}
+		})
 
 		actual := users.Skip(5).Where(func(u user) bool { return u.name[0] == 'A' }).Count(func(u user) bool { return true })
 		assert.Equal(2, actual)
 	}
 	{ // Order by string
-		ss := NewLinq([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
+		ss := New([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
 		orderedSs := OrderBy(ss, func(u user) string { return u.name })
-		assert.Equal(NewLinq([]user{{name: "a"}, {name: "a1234567"}, {name: "abc"}, {name: "apple"}}), orderedSs)
+		assert.Equal(New([]user{{name: "a"}, {name: "a1234567"}, {name: "abc"}, {name: "apple"}}), orderedSs)
 	}
 	{ // Order by string length
-		ss := NewLinq([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
+		ss := New([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
 		orderedSs := OrderBy(ss, func(u user) int { return len(u.name) })
-		assert.Equal(NewLinq([]user{{name: "a"}, {name: "abc"}, {name: "apple"}, {name: "a1234567"}}), orderedSs)
+		assert.Equal(New([]user{{name: "a"}, {name: "abc"}, {name: "apple"}, {name: "a1234567"}}), orderedSs)
 	}
 }
 
@@ -388,7 +388,7 @@ func Test_Select(t *testing.T) {
 		age  int
 	}
 
-	users := Linq[user]{
+	users := []user{
 		{
 			name: "Ann",
 			age:  12,
@@ -440,7 +440,7 @@ func Test_GroupBy(t *testing.T) {
 		},
 	}
 
-	act := GroupBy(NewLinq(testData),
+	act := GroupBy(New(testData),
 		func(s str) string { return s.key },
 		func(s str) int { return s.value })
 
@@ -466,5 +466,5 @@ func TestSelectMany(t *testing.T) {
 
 	expected := []int{1, 4, 9, 16, 25, 36, 49, 64, 81}
 
-	assert.Equal(NewLinq(expected), result)
+	assert.Equal(New(expected), result)
 }
