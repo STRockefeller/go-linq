@@ -24,6 +24,24 @@ func NewLinq[T LinqableType](slice []T) Linq[T] {
 	return Linq[T](slice)
 }
 
+// Linq constructor
+func NewFromMap[K comparable, V any, T LinqableType](m map[K]V, delegate func(K, V) T) Linq[T] {
+	res := make([]T, 0, len(m))
+	for k, v := range m {
+		res = append(res, delegate(k, v))
+	}
+	return res
+}
+
+// Linq constructor
+func NewFromChannel[T LinqableType](c <-chan T) Linq[T] {
+	res := make([]T, 0)
+	for v := range c {
+		res = append(res, v)
+	}
+	return res
+}
+
 // Contains determines whether a sequence contains a specified element.
 func (linq Linq[T]) Contains(target T) bool {
 	for _, elem := range linq {
