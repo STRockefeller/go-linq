@@ -290,9 +290,9 @@ func (l linq[T]) SkipLast(count int) Linq[T] {
 }
 
 // Select projects each element of linq into a new form by incorporating the element's index.
-func Select[T, S any](l Linq[T], delegate func(T) S) Linq[S] {
-	res := make([]S, len(l.(*linq[T]).items))
-	for i, elem := range l.(*linq[T]).items {
+func Select[T, S any](items []T, delegate func(T) S) Linq[S] {
+	res := make([]S, len(items))
+	for i, elem := range items {
 		res[i] = delegate(elem)
 	}
 	return New(res)
@@ -300,42 +300,43 @@ func Select[T, S any](l Linq[T], delegate func(T) S) Linq[S] {
 
 // SelectMany takes a slice of slices and a selector function,
 // and returns a flattened slice of elements selected by the selector function.
-func SelectMany[T any, U any](l Linq[T], selector func(T) []U) Linq[U] {
+func SelectMany[T any, U any](items []T, selector func(T) []U) Linq[U] {
 	var res []U
 
-	l.ForEach(func(t T) {
+	for _, t := range items {
 		res = append(res, selector(t)...)
-	})
+	}
 
 	return New(res)
 }
 
 // OrderBy sorts the elements of a sequence in ascending order according to a key.
-func OrderBy[L any, O constraints.Ordered](l Linq[L], comparer func(L) O) Linq[L] {
-	sort.SliceStable(l.(*linq[L]).items, func(i, j int) bool {
-		return comparer(l.(*linq[L]).items[i]) < comparer(l.(*linq[L]).items[j])
+func OrderBy[L any, O constraints.Ordered](items []L, comparer func(L) O) Linq[L] {
+	sort.SliceStable(items, func(i, j int) bool {
+		return comparer(items[i]) < comparer(items[j])
 	})
-	return l
+	return New(items)
 }
 
 // OrderByDescending sorts the elements of a sequence in descending order according to a key.
-func OrderByDescending[L any, O constraints.Ordered](l Linq[L], comparer func(L) O) Linq[L] {
-	sort.SliceStable(l.(*linq[L]).items, func(i, j int) bool {
-		return comparer(l.(*linq[L]).items[i]) > comparer(l.(*linq[L]).items[j])
+func OrderByDescending[L any, O constraints.Ordered](items []L, comparer func(L) O) Linq[L] {
+	sort.SliceStable(items, func(i, j int) bool {
+		return comparer(items[i]) > comparer(items[j])
 	})
-	return l
+	return New(items)
 }
 
-func GroupBy[L any, K comparable, E any](l Linq[L], key func(L) K, element func(L) E) map[K][]E {
+func GroupBy[L any, K comparable, E any](items []L, key func(L) K, element func(L) E) map[K][]E {
 	res := make(map[K][]E)
-	l.ForEach(func(l L) {
-		elem := element(l)
-		if _, ok := res[key(l)]; ok {
-			res[key(l)] = append(res[key(l)], elem)
+
+	for _, item := range items {
+		elem := element(item)
+		if _, ok := res[key(item)]; ok {
+			res[key(item)] = append(res[key(item)], elem)
 		} else {
-			res[key(l)] = []E{elem}
+			res[key(item)] = []E{elem}
 		}
-	})
+	}
 	return res
 }
 
@@ -406,11 +407,11 @@ func (l linq[T]) ToMapWithKey(keySelector func(T) interface{}) map[interface{}]T
 }
 
 // Creates a map[TKey]TSource from an linq[TSource] according to a specified key selector function.
-func ConvertToMapWithKey[TSource any, TKey comparable](l Linq[TSource], keySelector func(TSource) TKey) map[TKey]TSource {
+func ConvertToMapWithKey[TSource any, TKey comparable](items []TSource, keySelector func(TSource) TKey) map[TKey]TSource {
 	res := make(map[TKey]TSource)
-	l.ForEach(func(t TSource) {
-		res[keySelector(t)] = t
-	})
+	for _, item := range items {
+		res[keySelector(item)] = item
+	}
 	return res
 }
 
@@ -424,11 +425,12 @@ func (l linq[T]) ToMapWithKeyValue(keySelector func(T) interface{}, valueSelecto
 }
 
 // Creates a map[TKey,TValue] from an linq[TSource] according to specified key selector and element selector functions.
-func ConvertToMapWithKeyValue[TSource any, TKey comparable, TValue any](l Linq[TSource], keySelector func(TSource) TKey, valueSelector func(TSource) TValue) map[TKey]TValue {
+func ConvertToMapWithKeyValue[TSource any, TKey comparable, TValue any](items []TSource, keySelector func(TSource) TKey, valueSelector func(TSource) TValue) map[TKey]TValue {
 	res := make(map[TKey]TValue)
-	l.ForEach(func(t TSource) {
-		res[keySelector(t)] = valueSelector(t)
-	})
+
+	for _, item := range items {
+		res[keySelector(item)] = valueSelector(item)
+	}
 	return res
 }
 

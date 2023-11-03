@@ -35,7 +35,7 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(5, m[50])
 	}
 	{ // ConvertToMapWithKey
-		m := ConvertToMapWithKey(si, func(i int) float32 { return float32(i) * 0.1 })
+		m := ConvertToMapWithKey(si.ToSlice(), func(i int) float32 { return float32(i) * 0.1 })
 		assert.Equal(5, m[0.5])
 	}
 	{ // ToMapWithKeyValue
@@ -43,7 +43,7 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(4, m[200])
 	}
 	{ // ConvertToMapWithKeyValue
-		m := ConvertToMapWithKeyValue(si, func(i int) int { return i * 100 }, func(i int) int { return i * 2 })
+		m := ConvertToMapWithKeyValue(si.ToSlice(), func(i int) int { return i * 100 }, func(i int) int { return i * 2 })
 		assert.Equal(6, m[300])
 	}
 	{ // Where
@@ -214,17 +214,17 @@ func Test_Int_Methods(t *testing.T) {
 	}
 	{ // another Order
 		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
-		orderedSi := OrderBy(si, func(i int) int { return i })
+		orderedSi := OrderBy(si.ToSlice(), func(i int) int { return i })
 		assert.Equal(New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
 	}
 	{ // another Order
 		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
-		orderedSi := OrderBy(si, func(i int) int64 { return int64(i * 20) })
+		orderedSi := OrderBy(si.ToSlice(), func(i int) int64 { return int64(i * 20) })
 		assert.Equal(New([]int{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}), orderedSi)
 	}
 	{ // another OrderByDescending
 		si := New([]int{5, 8, 2, 3, 6, 9, 4, 1, 7, 0})
-		orderedSi := OrderByDescending(si, func(i int) int { return i })
+		orderedSi := OrderByDescending(si.ToSlice(), func(i int) int { return i })
 		assert.Equal(New([]int{9, 8, 7, 6, 5, 4, 3, 2, 1, 0}), orderedSi)
 	}
 	{ // Add
@@ -277,7 +277,7 @@ func Test_Int_Methods(t *testing.T) {
 			1: {"1", "3", "5"},
 		}
 
-		actual := GroupBy(si, keyFunc, elementFunc)
+		actual := GroupBy(si.ToSlice(), keyFunc, elementFunc)
 
 		assert.Equal(expected, actual)
 	}
@@ -287,7 +287,7 @@ func Test_Int_Methods(t *testing.T) {
 		elementFunc := func(i int) string { return strconv.Itoa(i) }
 		expected := map[int][]string{}
 
-		actual := GroupBy(si, keyFunc, elementFunc)
+		actual := GroupBy(si.ToSlice(), keyFunc, elementFunc)
 		assert.Equal(expected, actual)
 	}
 	{ // Repeat numbers
@@ -371,12 +371,12 @@ func Test_Struct_Methods(t *testing.T) {
 	}
 	{ // Order by string
 		ss := New([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
-		orderedSs := OrderBy(ss, func(u user) string { return u.name })
+		orderedSs := OrderBy(ss.ToSlice(), func(u user) string { return u.name })
 		assert.Equal(New([]user{{name: "a"}, {name: "a1234567"}, {name: "abc"}, {name: "apple"}}), orderedSs)
 	}
 	{ // Order by string length
 		ss := New([]user{{name: "abc"}, {name: "apple"}, {name: "a1234567"}, {name: "a"}})
-		orderedSs := OrderBy(ss, func(u user) int { return len(u.name) })
+		orderedSs := OrderBy(ss.ToSlice(), func(u user) int { return len(u.name) })
 		assert.Equal(New([]user{{name: "a"}, {name: "abc"}, {name: "apple"}, {name: "a1234567"}}), orderedSs)
 	}
 }
@@ -403,7 +403,7 @@ func Test_Select(t *testing.T) {
 		},
 	}
 
-	names := Select(New(users), func(u user) string { return u.name })
+	names := Select(users, func(u user) string { return u.name })
 	assert.Equal([]string{"Ann", "Jack", "Ian"}, names.ToSlice())
 }
 
@@ -440,7 +440,7 @@ func Test_GroupBy(t *testing.T) {
 		},
 	}
 
-	act := GroupBy(New(testData),
+	act := GroupBy(testData,
 		func(s str) string { return s.key },
 		func(s str) int { return s.value })
 
@@ -460,8 +460,8 @@ func TestSelectMany(t *testing.T) {
 		return []int{x * x}
 	}
 
-	result := SelectMany(New([][]int{slice1, slice2, slice3}), func(x []int) []int {
-		return SelectMany(New(x), selector).ToSlice()
+	result := SelectMany([][]int{slice1, slice2, slice3}, func(x []int) []int {
+		return SelectMany(x, selector).ToSlice()
 	})
 
 	expected := []int{1, 4, 9, 16, 25, 36, 49, 64, 81}
