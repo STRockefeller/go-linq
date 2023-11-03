@@ -42,6 +42,7 @@ type Linq[T any] interface {
 	ToMapWithKeyValue(keySelector func(T) interface{}, valueSelector func(T) interface{}) map[interface{}]interface{}
 	ToSlice() []T
 	Where(predicate func(T) bool) Linq[T]
+	Length() int
 
 	// pointer receiver methods
 	Add(element T)

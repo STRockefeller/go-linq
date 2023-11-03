@@ -505,7 +505,7 @@ func TestNewFromMap_WithOneKeyValuePair_ReturnsLinqWithLengthOne(t *testing.T) {
 
 	result := NewFromMap(m, delegate)
 
-	assert.Equal(1, result.Count(NoPredict[string]()))
+	assert.Equal(1, result.Length())
 }
 
 // Should panic when given a nil delegate function

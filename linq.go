@@ -574,4 +574,9 @@ func (l *linq[T]) RemoveRange(index, count int) error {
 	return nil
 }
 
+// Length returns the number of items in the linq[T] collection.
+func (l linq[T]) Length() int {
+	return len(l.items)
+}
+
 // #endregion not linq
