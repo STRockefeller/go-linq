@@ -20,7 +20,7 @@ func Test_Int_Methods(t *testing.T) {
 		for element := range ch {
 			elements = append(elements, element)
 		}
-		assert.ElementsMatch(si, elements)
+		assert.ElementsMatch(si.ToSlice(), elements)
 	}
 	{ // ToChannelWithBuffer
 		ch := si.ToChannelWithBuffer(2)
@@ -28,7 +28,7 @@ func Test_Int_Methods(t *testing.T) {
 		for element := range ch {
 			elements = append(elements, element)
 		}
-		assert.ElementsMatch(si, elements)
+		assert.ElementsMatch(si.ToSlice(), elements)
 	}
 	{ // ToMapWithKey
 		m := si.ToMapWithKey(func(i int) interface{} { return i * 10 })
@@ -147,8 +147,8 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(999, actual)
 	}
 	{ // Prepend multiple value
-		actual := si.Prepend(999, 888)[:2]
-		assert.Equal(New([]int{999, 888}), actual)
+		actual := si.Prepend(999, 888).ToSlice()[:2]
+		assert.Equal([]int{999, 888}, actual)
 	}
 	{ // Reverse
 		actual := si.Reverse().ToSlice()
@@ -313,17 +313,17 @@ func Test_Int_Methods(t *testing.T) {
 		assert.Equal(expected, actual)
 	}
 	{ // Sum
-		nsi := NewNumberLinq[int, int](si)
+		nsi := NewNumberLinq[int, int](si.ToSlice())
 		sum := nsi.Sum(func(i int) int { return i })
 		assert.Equal(45, sum)
 	}
 	{ // Max
-		nsi := NewNumberLinq[int, int](si)
+		nsi := NewNumberLinq[int, int](si.ToSlice())
 		max := nsi.Max(func(i int) int { return i })
 		assert.Equal(9, max)
 	}
 	{ // Min
-		nsi := NewNumberLinq[int, int](si)
+		nsi := NewNumberLinq[int, int](si.ToSlice())
 		min := nsi.Min(func(i int) int { return i })
 		assert.Equal(0, min)
 	}
@@ -341,13 +341,13 @@ func Test_Struct_Methods(t *testing.T) {
 			name: "Rockefeller",
 		}, 3)
 		expected := New([]user{
-			user{
+			{
 				name: "Rockefeller",
 			},
-			user{
+			{
 				name: "Rockefeller",
 			},
-			user{
+			{
 				name: "Rockefeller",
 			},
 		})
@@ -403,7 +403,7 @@ func Test_Select(t *testing.T) {
 		},
 	}
 
-	names := Select(users, func(u user) string { return u.name })
+	names := Select(New(users), func(u user) string { return u.name })
 	assert.Equal([]string{"Ann", "Jack", "Ian"}, names.ToSlice())
 }
 
@@ -460,8 +460,8 @@ func TestSelectMany(t *testing.T) {
 		return []int{x * x}
 	}
 
-	result := SelectMany([][]int{slice1, slice2, slice3}, func(x []int) []int {
-		return SelectMany(x, selector)
+	result := SelectMany(New([][]int{slice1, slice2, slice3}), func(x []int) []int {
+		return SelectMany(New(x), selector).ToSlice()
 	})
 
 	expected := []int{1, 4, 9, 16, 25, 36, 49, 64, 81}
@@ -479,7 +479,7 @@ func TestNewFromMap_EmptyMap_ReturnsEmptyLinq(t *testing.T) {
 
 	result := NewFromMap(m, delegate)
 
-	assert.Empty(result, "Expected empty linq")
+	assert.Empty(result.ToSlice(), "Expected empty linq")
 }
 
 // Call the 'NewFromMap' function with a nil map[K]V and assert that the returned linq[T] is empty.
@@ -491,7 +491,7 @@ func Test_new_from_map_with_nil_map(t *testing.T) {
 		return v + strconv.Itoa(k)
 	}
 
-	assert.Empty(NewFromMap(m, delegate))
+	assert.Empty(NewFromMap(m, delegate).ToSlice())
 }
 
 // Call the 'NewFromMap' function with a map[K]V containing one key-value pair and assert that the length of the returned linq[T] is 1.
@@ -505,7 +505,7 @@ func TestNewFromMap_WithOneKeyValuePair_ReturnsLinqWithLengthOne(t *testing.T) {
 
 	result := NewFromMap(m, delegate)
 
-	assert.Equal(1, len(result))
+	assert.Equal(1, result.Count(NoPredict[string]()))
 }
 
 // Should panic when given a nil delegate function
@@ -526,7 +526,7 @@ func Test_empty_linq_when_channel_closed_before_any_value_sent(t *testing.T) {
 
 	result := NewFromChannel(c)
 
-	assert.Empty(t, result)
+	assert.Empty(t, result.ToSlice())
 }
 
 // Returns a linq[T] with all values sent through the channel
@@ -541,5 +541,5 @@ func Test_linq_with_all_values_sent_through_channel(t *testing.T) {
 
 	result := NewFromChannel(c)
 
-	assert.ElementsMatch(t, []int{1, 2, 3}, result)
+	assert.ElementsMatch(t, []int{1, 2, 3}, result.ToSlice())
 }

@@ -2,12 +2,12 @@ package linq
 
 import "sync"
 
-func RunInAsync[I comparable, O any](inputs linq[I], delegate func(I) O) []O {
-	res := make([]O, len(inputs))
+func RunInAsync[I comparable, O any](inputs Linq[I], delegate func(I) O) []O {
+	res := make([]O, inputs.Count(NoPredict[I]()))
 	m := sync.Mutex{}
 	wg := sync.WaitGroup{}
-	wg.Add(len(inputs))
-	for i, input := range inputs {
+	wg.Add(inputs.Count(NoPredict[I]()))
+	for i, input := range inputs.ToSlice() {
 		i := i
 		input := input
 		go func() {
